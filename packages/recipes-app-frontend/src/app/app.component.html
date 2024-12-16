@@ -1,0 +1,9 @@
+<div *ngIf="!isLoggedIn">
+  <!-- Aquí se muestra el login si el usuario no está logueado -->
+  <app-login></app-login>
+</div>
+
+<div *ngIf="isLoggedIn">
+  <!-- Aquí se muestra el contenido principal si el usuario está logueado -->
+  <app-main></app-main>
+</div>

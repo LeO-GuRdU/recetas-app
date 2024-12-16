@@ -1,0 +1,21 @@
+{
+  "name": "express-app-master",
+  "version": "0.0.1",
+  "description": "A test in express app",
+  "author": "leogurdulich@gmail.com",
+  "private": true,
+  "scripts": {
+    "clean": "find . -name 'dist' -type d -prune -exec rm -rf '{}' + && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' + && find . -name '.angular' -type d -prune -exec rm -rf '{}' +",
+    "start": "pm2 start ecosystem.config.js"
+  },
+  "dependencies": {
+    "@angular/cli": "^18.2.11",
+    "@grpc/proto-loader": "^0.7.13",
+    "express": "^4.21.2",
+    "express-graphql": "^0.12.0",
+    "glob": "^11.0.0",
+    "graphql": "^15.9.0",
+    "grpc": "^1.24.11",
+    "pm2": "^5.4.2"
+  }
+}
