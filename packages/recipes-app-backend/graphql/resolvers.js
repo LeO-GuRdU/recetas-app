@@ -39,17 +39,21 @@ const resolvers = {
       }
     },
     // Crear una receta
-    async createRecipe(_, { title, description, category, image, ingredients, steps }, context) {
-      if (!context.userId) {
+    async createRecipe(_, { title, description, category, image, ingredients, steps, userId }, context) {
+      // Si no se pasa `userId` en las variables, intenta obtenerlo del contexto (token)
+      const user = userId || context.userId;
+
+      if (!user) {
         throw new Error('No autenticado');
       }
+
     
       const recipe = new Recipe({
         title,
         description,
         category,
         image,
-        userId: context.userId, // Asociar la receta al usuario autenticado
+        userId: user, // Asociar la receta al usuario autenticado
         ingredients,
         steps,
       });

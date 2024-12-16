@@ -1,0 +1,41 @@
+<div class="recetas-container">
+  <mat-toolbar color="primary" class="recetas-toolbar">
+    <span>Recetas</span>
+    <div class="recetas-limit">
+      <mat-button-toggle-group [(ngModel)]="limit" (change)="onLimitChange(limit)" aria-label="Seleccionar límite">
+        <mat-button-toggle value="10">10</mat-button-toggle>
+        <mat-button-toggle value="15">15</mat-button-toggle>
+        <mat-button-toggle value="20">20</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </mat-toolbar>
+
+  <!-- Cargando o mostrar recetas -->
+  <div *ngIf="isLoading" class="loading-spinner">
+    <mat-spinner></mat-spinner>
+    <p>Cargando recetas...</p>
+  </div>
+
+  <div *ngIf="noRecipes" class="no-recipes-message">
+    <p>Aún no tenemos recetas en el sitio.</p>
+    <button mat-raised-button color="accent" (click)="navigateToCreateRecipe()">Crea tu primera receta</button>
+  </div>
+
+  <div *ngIf="!isLoading && !noRecipes" class="recetas-list">
+    <mat-card *ngFor="let receta of recetas" class="receta-card">
+      <mat-card-header>
+        <div mat-card-avatar class="receta-avatar">
+          <img [src]="receta.image" alt="Receta Image" />
+        </div>
+        <mat-card-title>{{ receta.title }}</mat-card-title>
+        <mat-card-subtitle>{{ receta.category }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <p>{{ receta.description }}</p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-button>Ver más</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

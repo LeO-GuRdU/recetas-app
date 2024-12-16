@@ -1,9 +1,53 @@
-<div *ngIf="!isLoggedIn">
-  <!-- Aquí se muestra el login si el usuario no está logueado -->
-  <app-login></app-login>
-</div>
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidebar -->
+  <mat-sidenav
+    #sidenav
+    mode="side"
+    [opened]="!isSidebarCollapsed"
+    class="sidenav"
+    [ngClass]="{ 'mat-sidenav-collapsed': isSidebarCollapsed }"
+  >
+    <!-- Perfil de usuario -->
+    <div class="profile">
+      <mat-card class="profile-card">
+        <mat-card-header>
+          <div mat-card-avatar class="avatar">
+            <img [src]="user?.photoUrl" alt="User Avatar" />
+          </div>
+          <mat-card-title>{{ user?.email }}</mat-card-title>
+        </mat-card-header>
+      </mat-card>
+    </div>
 
-<div *ngIf="isLoggedIn">
-  <!-- Aquí se muestra el contenido principal si el usuario está logueado -->
-  <app-main></app-main>
-</div>
+    <!-- Menú -->
+    <mat-nav-list>
+      <a mat-list-item routerLink="/recetas" routerLinkActive="active">
+        <mat-icon>list</mat-icon>
+        Recetas
+      </a>
+      <a mat-list-item routerLink="/mis-recetas" routerLinkActive="active">
+        <mat-icon>folder</mat-icon>
+        Mis Recetas
+      </a>
+      <a mat-list-item routerLink="/crear-receta" routerLinkActive="active">
+        <mat-icon>add_box</mat-icon>
+        Crear Receta
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Contenido principal -->
+  <mat-sidenav-content>
+    <!-- Barra de herramientas con botón para colapsar la sidebar -->
+    <mat-toolbar class="toolbar">
+      <button mat-icon-button (click)="toggleSidebar()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>App de Recetas</span>
+
+    </mat-toolbar>
+
+    <!-- Aquí va el contenido principal -->
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

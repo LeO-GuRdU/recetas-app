@@ -12,12 +12,23 @@ const authRoutes = require('./routes/auth.routes');
 const jwt = require('jsonwebtoken');
 const fetch = require('node-fetch');
 const User = require('./models/User');
+const cookieParser = require('cookie-parser');
+
 
 // Cargar variables de entorno
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Middlewares
+app.use(cors({
+  origin: 'http://localhost:4200',  // Asegúrate de que aquí esté el origen correcto (tu frontend)
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Asegúrate de que se permiten los métodos correctos
+  credentials: true, // Permite que las cookies sean enviadas en las solicitudes
+  allowedHeaders: ['Content-Type', 'Authorization'], // Asegúrate de que se permiten los encabezados correctos
+}));
+app.use(express.json());
 
 // Conexión a MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -36,6 +47,8 @@ app.use(
 // Configuración de Passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(cookieParser());
 
 // Configuración de Google Strategy
 passport.use(
@@ -73,14 +86,6 @@ passport.use(
 // Serializar/Deserializar usuario
 passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
-
-// Middlewares
-app.use(cors({
-  origin: 'http://localhost:4200', // Ajusta esto si tu frontend tiene otra URL
-  methods: ['GET', 'POST'],
-  credentials: true,
-}));
-app.use(express.json());
 
 // Ruta de inicio
 app.get('/', (req, res) => {
@@ -131,6 +136,7 @@ app.get(
             name: req.user.name,
           },
         }),
+        credentials: 'include',
       });
 
       const { data } = await response.json();
@@ -138,6 +144,14 @@ app.get(
 
       const token = jwt.sign({ id: data.createOrFindUser._id }, process.env.JWT_SECRET || 'default_secret', {
         expiresIn: '1d',
+      });
+
+      // Configurar la cookie con el token JWT
+      res.cookie('token', token, {
+        httpOnly: true, // La cookie no puede ser leída por JavaScript del cliente
+        secure: false, // Cambiar a true en producción con HTTPS
+        sameSite: 'strict', // Evita CSRF
+        maxAge: 24 * 60 * 60 * 1000, // La cookie expirará en 1 día
       });
 
       res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:4200'}?token=${token}`);
@@ -153,7 +167,8 @@ app.use('/api/auth', authRoutes);
 
 // Middleware para verificar el token en las peticiones a /graphql
 app.post('/graphql', (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+  // Extraer el token de la cookie
+  const token = req.cookies.token;  // Aquí tomamos el token de las cookies
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -167,10 +182,17 @@ app.post('/graphql', (req, res, next) => {
 
 // Configuración de Apollo Server
 const startServer = async () => {
-  const server = new ApolloServer({ typeDefs, resolvers });
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    cors: {
+      origin: 'http://localhost:4200',  // El frontend
+      credentials: true,  // Permite el envío de cookies
+    },
+  });
 
   await server.start();
-  server.applyMiddleware({ app });
+  server.applyMiddleware({ app, cors: false });
 
   // Iniciar el servidor
   app.listen(PORT, () => {

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -8,17 +9,25 @@ import { Router } from '@angular/router';
 })
 export class AppComponent implements OnInit {
   isLoggedIn = false;
+  user: any;
+  isSidebarCollapsed = false;  // Estado para el colapso de la sidebar
 
-  constructor(private router: Router) {}
+  constructor(
+    private readonly router: Router,
+    private readonly authService: AuthService,
+  ) {}
 
   ngOnInit(): void {
     // Capturar el token de la URL
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
 
+
     if (token) {
       // Guardar el token en localStorage
       localStorage.setItem('authToken', token);
+        const decodedToken = this.decodeToken(token); // Decodifica el token si es válido
+        this.setUser(decodedToken);  // Establece el usuario en el servicio de autenticación
 
       // Limpiar la URL para evitar que el token sea visible
       window.history.replaceState({}, document.title, '/');
@@ -35,5 +44,22 @@ export class AppComponent implements OnInit {
       this.isLoggedIn = false;
       this.router.navigate(['/login']);
     }
+  }
+
+  toggleSidebar() {
+    this.isSidebarCollapsed = !this.isSidebarCollapsed;  // Cambiar el estado
+  }
+
+  decodeToken(token: string) {
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  setUser(user: any): void {
+    this.user = user;
+    this.authService.setUser(user);
   }
 }

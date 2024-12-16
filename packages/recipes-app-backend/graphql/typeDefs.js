@@ -50,8 +50,8 @@ const typeDefs = gql`
     # Crear una nueva receta
     createRecipe(
       title: String!
-      description: String
-      category: String
+      description: String!
+      category: String!
       image: String
       userId: ID! # El usuario que crea la receta
       ingredients: [IngredientInput!]!

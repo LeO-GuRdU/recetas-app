@@ -1,0 +1,43 @@
+@import 'variables';
+@import 'mixins';
+
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: $sidebar-width;
+  padding-top: 20px;
+}
+
+.profile-card {
+  margin-bottom: 20px;
+}
+
+.profile {
+  padding: 10px;
+}
+
+.profile .avatar img {
+  @include avatar-size($avatar-size);
+}
+
+.toolbar {
+  background-color: $primary-color;
+  color: white;
+  padding: 0 16px;
+}
+
+mat-sidenav-content {
+  padding: 16px;
+}
+
+mat-nav-list a {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+
+  mat-icon {
+    margin-right: 10px;
+  }
+}
