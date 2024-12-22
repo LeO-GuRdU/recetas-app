@@ -1,7 +1,11 @@
 const User = require('../models/User');
 const Recipe = require('../models/Recipe');
+const fs = require('fs');
+const path = require('path');
 
 const resolvers = {
+  Upload: require('graphql-upload').GraphQLUpload, // Scalar para manejar la subida de archivos
+
   Query: {
     // Traer todas las recetas (con filtros opcionales)
     getAllRecipes: async (_, { filter }) => {
@@ -47,12 +51,22 @@ const resolvers = {
         throw new Error('No autenticado');
       }
 
+      // Guardar la imagen en el servidor
+      const { createReadStream, filename } = await image;
+      const imagePath = path.join(__dirname, 'uploads', filename);
+      await new Promise((resolve, reject) => {
+        createReadStream()
+          .pipe(fs.createWriteStream(imagePath))
+          .on('finish', resolve)
+          .on('error', reject);
+      });
+
     
       const recipe = new Recipe({
         title,
         description,
         category,
-        image,
+        image: `/uploads/${filename}`, // Ruta relativa para servir la imagen
         userId: user, // Asociar la receta al usuario autenticado
         ingredients,
         steps,
@@ -60,17 +74,32 @@ const resolvers = {
       await recipe.save();
       return recipe;
     },
-    // Modificar una receta
-    updateRecipe: async (_, { id, input }, { req }) => {
-      const user = authenticate(req);
-      const recipe = await Recipe.findOneAndUpdate(
-        { _id: id, userId: user.id }, // Solo permite modificar recetas propias
-        { $set: input },
-        { new: true }
-      );
-      if (!recipe) throw new Error('Receta no encontrada o no autorizada.');
-      return recipe;
+
+    uploadRecipeImage: async (parent, { file }) => {
+      try {
+        const { createReadStream, filename, mimetype, encoding } = await file;
+        const imagePath = path.join(__dirname, 'uploads', filename);
+    
+        // Validate file type (optional)
+        const allowedTypes = ['image/jpeg', 'image/png'];
+        if (!allowedTypes.includes(mimetype)) {
+          throw new Error('Invalid file type. Only JPEG and PNG are allowed.');
+        }
+    
+        await new Promise((resolve, reject) => {
+          createReadStream()
+            .pipe(fs.createWriteStream(imagePath))
+            .on('finish', resolve)
+            .on('error', reject);
+        });
+    
+        return { url: `/uploads/${filename}` };
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        throw new Error('Error uploading the image.');
+      }
     },
+
     // Eliminar una receta
     deleteRecipe: async (_, { id }, { req }) => {
       const user = authenticate(req);

@@ -10,12 +10,14 @@ const typeDefs = gql`
     createdAt: String
   }
 
+  scalar Upload
+
   type Recipe {
     id: ID!
     title: String!
     description: String!
     category: String!
-    image: String
+    image: String! # Ruta o nombre del archivo guardado
     ingredients: [Ingredient!]!
     steps: [String!]!
     userId: ID! # Relación con usuario
@@ -30,6 +32,10 @@ const typeDefs = gql`
   type AuthResponse {
     token: String!
     user: User!
+  }
+
+  type FileResponse {
+    url: String!
   }
 
   type Query {
@@ -52,7 +58,7 @@ const typeDefs = gql`
       title: String!
       description: String!
       category: String!
-      image: String
+      image: Upload!
       userId: ID! # El usuario que crea la receta
       ingredients: [IngredientInput!]!
       steps: [String!]!
@@ -64,10 +70,13 @@ const typeDefs = gql`
       title: String
       description: String
       category: String
-      image: String
+      image: Upload!
       ingredients: [IngredientInput!]
       steps: [String!]
     ): Recipe
+
+    # Subir imagen de receta
+    uploadRecipeImage(file: Upload!): FileResponse!
 
     # Eliminar una receta
     deleteRecipe(id: ID!): String

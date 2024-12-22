@@ -39,9 +39,26 @@
 
         <!-- Imagen -->
         <mat-form-field appearance="fill">
-          <mat-label>Imagen (URL)</mat-label>
-          <input matInput formControlName="image" />
+          <mat-label>Imagen de la Receta</mat-label>
+          <input
+            matInput
+            [value]="file?.name || ''"
+            placeholder="Seleccionar archivo"
+            readonly
+            (click)="fileInput.click()"
+          />
+          <input
+            #fileInput
+            type="file"
+            (change)="onFileSelected($event)"
+            hidden
+            accept="image/*"
+          />
         </mat-form-field>
+        <p *ngIf="uploadedImageUrl">
+          Imagen subida:
+          <img [src]="uploadedImageUrl" alt="Imagen subida" style="max-width: 100px;" />
+        </p>
 
         <!-- Ingredientes -->
         <div formArrayName="ingredients">

@@ -1,19 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const cors = require('cors');
 const passport = require('passport');
-const session = require('express-session');
-const { ApolloServer } = require('apollo-server-express');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const typeDefs = require('./graphql/typeDefs');
-const resolvers = require('./graphql/resolvers');
+const configureExpress = require('./expressConfig');
+const createApolloServer = require('./graphql/apolloServer');
 const authRoutes = require('./routes/auth.routes');
-const jwt = require('jsonwebtoken');
-const fetch = require('node-fetch');
-const User = require('./models/User');
-const cookieParser = require('cookie-parser');
-
+const cors = require('cors');
 
 // Cargar variables de entorno
 dotenv.config();
@@ -26,71 +18,21 @@ app.use(cors({
   origin: 'http://localhost:4200',  // Asegúrate de que aquí esté el origen correcto (tu frontend)
   methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Asegúrate de que se permiten los métodos correctos
   credentials: true, // Permite que las cookies sean enviadas en las solicitudes
-  allowedHeaders: ['Content-Type', 'Authorization'], // Asegúrate de que se permiten los encabezados correctos
+  allowedHeaders: ['Content-Type', 'Authorization', 'apollo-require-preflight'], // Asegúrate de que se permiten los encabezados correctos
 }));
-app.use(express.json());
 
-// Conexión a MongoDB
+// Configurar middlewares de Express
+configureExpress(app);
+
+// Conectar a MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB conectado'))
   .catch((err) => console.error('Error conectando a MongoDB:', err));
 
-// Configuración de sesión
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || 'secreto-secretito',
-    resave: false,
-    saveUninitialized: true,
-  })
-);
-
-// Configuración de Passport
+// Configurar Passport (puedes separar esta configuración también si es necesario)
+require('./auth/passportConfig'); // Crea este archivo si quieres modularizar la configuración de Passport
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(cookieParser());
-
-// Configuración de Google Strategy
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${process.env.BACKEND_URL || 'http://localhost:3000'}/auth/google/callback`,
-      scope: ['profile', 'email'], // Aquí estás pidiendo acceso al perfil y al email
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      console.log('Google Profile:', profile); // Verificación del perfil de Google
-      try {
-        const user = await User.findOne({ googleId: profile.id });
-
-        if (!user) {
-          const newUser = new User({
-            googleId: profile.id,
-            email: profile.emails[0].value,
-            name: profile.displayName,
-          });
-          await newUser.save();
-          return done(null, newUser);
-        }
-
-        return done(null, user); // Si el usuario ya existe, continuar
-      } catch (err) {
-        console.error('Error during Google authentication:', err);
-        return done(err, null);
-      }
-    }
-  )
-);
-
-// Serializar/Deserializar usuario
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((user, done) => done(null, user));
-
-// Ruta de inicio
-app.get('/', (req, res) => {
-  res.send('Servidor funcionando');
-});
 
 // Rutas de autenticación con Google
 app.get('/auth/google', (req, res, next) => {
@@ -162,39 +104,16 @@ app.get(
   }
 );
 
-// Rutas adicionales
+// Rutas
 app.use('/api/auth', authRoutes);
+app.get('/', (req, res) => res.send('Servidor funcionando'));
 
-// Middleware para verificar el token en las peticiones a /graphql
-app.post('/graphql', (req, res, next) => {
-  // Extraer el token de la cookie
-  const token = req.cookies.token;  // Aquí tomamos el token de las cookies
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.userId = decoded.id; // Extraer el userId del token
-    } catch (err) {
-      console.error('Token inválido:', err);
-    }
-  }
-  next();
-});
-
-// Configuración de Apollo Server
+// Inicializar Apollo Server
 const startServer = async () => {
-  const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    cors: {
-      origin: 'http://localhost:4200',  // El frontend
-      credentials: true,  // Permite el envío de cookies
-    },
-  });
+  const apolloServer = await createApolloServer();
+  apolloServer.applyMiddleware({ app, cors: false });
 
-  await server.start();
-  server.applyMiddleware({ app, cors: false });
-
-  // Iniciar el servidor
+  // Iniciar servidor Express
   app.listen(PORT, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);
     console.log(`GraphQL ejecutándose en http://localhost:${PORT}/graphql`);
