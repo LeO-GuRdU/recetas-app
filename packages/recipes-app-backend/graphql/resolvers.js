@@ -8,20 +8,23 @@ const resolvers = {
 
   Query: {
     // Traer todas las recetas (con filtros opcionales)
-    getAllRecipes: async (_, { filter }) => {
+    getAllRecipes: async (_, { filter, limit }) => {
       const query = {};
       if (filter?.category) query.category = filter.category;
       if (filter?.title) query.title = { $regex: filter.title, $options: 'i' };
 
-      return await Recipe.find(query);
+      return await Recipe.find(query).sort({ createdAt: -1 }).limit(limit);
     },
     getRecipeById: async (_, { id }) => {
       return await Recipe.findById(id);
     },
 
     // Obtener las recetas de un usuario específico
-    async getUserRecipes(_, { userId }) {
-      return await Recipe.find({ userId }); // Filtrar por userId
+    getUserRecipes: async (_, __, { userId }) => {
+      if (!userId) {
+        throw new Error('Not authenticated');
+      }
+      return await Recipe.find({ userId });
     },
   },
 
@@ -42,32 +45,34 @@ const resolvers = {
         throw new Error('No se pudo crear o buscar el usuario.');
       }
     },
+
     // Crear una receta
     async createRecipe(_, { title, description, category, image, ingredients, steps, userId }, context) {
-      // Si no se pasa `userId` en las variables, intenta obtenerlo del contexto (token)
       const user = userId || context.userId;
 
       if (!user) {
-        throw new Error('No autenticado');
+        throw new Error('Not authenticated');
       }
 
-      // Guardar la imagen en el servidor
-      const { createReadStream, filename } = await image;
-      const imagePath = path.join(__dirname, 'uploads', filename);
-      await new Promise((resolve, reject) => {
-        createReadStream()
-          .pipe(fs.createWriteStream(imagePath))
-          .on('finish', resolve)
-          .on('error', reject);
-      });
+      let imagePath = null;
 
-    
+      if (image) {
+        const { createReadStream, filename } = await image;
+        imagePath = path.join(__dirname, 'uploads', filename);
+        await new Promise((resolve, reject) => {
+          createReadStream()
+              .pipe(fs.createWriteStream(imagePath))
+              .on('finish', resolve)
+              .on('error', reject);
+        });
+      }
+
       const recipe = new Recipe({
         title,
         description,
         category,
-        image: `/uploads/${filename}`, // Ruta relativa para servir la imagen
-        userId: user, // Asociar la receta al usuario autenticado
+        image: imagePath ? `/uploads/${filename}` : null, // Use the image path if available
+        userId: user,
         ingredients,
         steps,
       });
@@ -79,20 +84,20 @@ const resolvers = {
       try {
         const { createReadStream, filename, mimetype, encoding } = await file;
         const imagePath = path.join(__dirname, 'uploads', filename);
-    
+
         // Validate file type (optional)
         const allowedTypes = ['image/jpeg', 'image/png'];
         if (!allowedTypes.includes(mimetype)) {
           throw new Error('Invalid file type. Only JPEG and PNG are allowed.');
         }
-    
+
         await new Promise((resolve, reject) => {
           createReadStream()
             .pipe(fs.createWriteStream(imagePath))
             .on('finish', resolve)
             .on('error', reject);
         });
-    
+
         return { url: `/uploads/${filename}` };
       } catch (error) {
         console.error('Error uploading image:', error);

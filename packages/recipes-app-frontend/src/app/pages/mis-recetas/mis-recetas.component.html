@@ -1,13 +1,6 @@
 <div class="recetas-container">
   <mat-toolbar color="primary" class="recetas-toolbar">
-    <span>Recetas</span>
-    <div class="recetas-limit">
-      <mat-button-toggle-group [(ngModel)]="limit" (change)="onLimitChange(limit)" aria-label="Seleccionar límite">
-        <mat-button-toggle value="10">10</mat-button-toggle>
-        <mat-button-toggle value="15">15</mat-button-toggle>
-        <mat-button-toggle value="20">20</mat-button-toggle>
-      </mat-button-toggle-group>
-    </div>
+    <span>Mis Recetas</span>
   </mat-toolbar>
 
   <div *ngIf="isLoading" class="loading-spinner">
@@ -16,7 +9,7 @@
   </div>
 
   <div *ngIf="noRecipes" class="no-recipes-message">
-    <p>Aún no tenemos recetas en el sitio.</p>
+    <p>No has creado ninguna receta aún.</p>
     <button mat-raised-button color="accent" (click)="navigateToCreateRecipe()">Crea tu primera receta</button>
   </div>
 

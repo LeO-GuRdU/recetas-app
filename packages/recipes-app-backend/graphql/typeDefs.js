@@ -17,10 +17,11 @@ const typeDefs = gql`
     title: String!
     description: String!
     category: String!
-    image: String! # Ruta o nombre del archivo guardado
+    image: String # Ruta o nombre del archivo guardado
     ingredients: [Ingredient!]!
     steps: [String!]!
     userId: ID! # Relación con usuario
+    createdAt: String!
   }
 
   type Ingredient {
@@ -40,10 +41,10 @@ const typeDefs = gql`
 
   type Query {
     # Consultar todas las recetas
-    getAllRecipes: [Recipe!]!
+    getAllRecipes(filter: RecipeFilterInput, limit: Int): [Recipe!]!
 
     # Consultar recetas para el usuario autenticado
-    getUserRecipes(userId: ID!): [Recipe!]! # Obtener recetas de un usuario
+    getUserRecipes: [Recipe!]! # Obtener recetas de un usuario
 
     # Consultar una receta específica
     getRecipeById(id: ID!): Recipe
@@ -58,7 +59,7 @@ const typeDefs = gql`
       title: String!
       description: String!
       category: String!
-      image: Upload!
+      image: Upload
       userId: ID! # El usuario que crea la receta
       ingredients: [IngredientInput!]!
       steps: [String!]!
@@ -70,7 +71,7 @@ const typeDefs = gql`
       title: String
       description: String
       category: String
-      image: Upload!
+      image: Upload
       ingredients: [IngredientInput!]
       steps: [String!]
     ): Recipe

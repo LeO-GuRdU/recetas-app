@@ -38,6 +38,7 @@ import {
   GoogleLoginProvider
 } from '@abacritt/angularx-social-login';
 import { CrearRecetaComponent } from './pages/crear-receta/crear-receta.component';
+import { MisRecetasComponent } from './pages/mis-recetas/mis-recetas.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { CrearRecetaComponent } from './pages/crear-receta/crear-receta.componen
     MainComponent,
     RecetasComponent,
     CrearRecetaComponent,
+    MisRecetasComponent,
   ],
   imports: [
     BrowserModule,

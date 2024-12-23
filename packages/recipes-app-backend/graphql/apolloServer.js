@@ -4,6 +4,7 @@ const typeDefs = require('./typeDefs');
 const resolvers = require('./resolvers');
 const { graphqlUploadExpress } = require('graphql-upload');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 
@@ -18,7 +19,7 @@ app.use(cors({
 // Asegúrate de usar el middleware para gestionar uploads
 app.use(graphqlUploadExpress({
   maxFileSize: 10000000,  // Max file size of 10 MB
-  maxFiles: 1,            // Only one file at a time
+  maxFiles: 10,            // Only one file at a time
 }));
 
 const createApolloServer = async () => {
@@ -28,8 +29,16 @@ const createApolloServer = async () => {
     cors: false,
     uploads: false, // Deshabilita la opción uploads integrada de Apollo Server si usas graphql-upload.
     context: ({ req }) => {
-      const userId = req.userId; // Adjuntar el userId al contexto si está disponible
-      return { userId };
+      const token = req.cookies.token;
+      if (token) {
+        try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET || 'default_secret');
+          return { userId: decoded.id };
+        } catch (err) {
+          console.error('Invalid token:', err);
+        }
+      }
+      return {};
     },
   });
 

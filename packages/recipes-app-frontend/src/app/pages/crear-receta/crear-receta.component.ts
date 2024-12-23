@@ -29,7 +29,7 @@ export class CrearRecetaComponent implements OnInit {
       category: ['', Validators.required],
       image: [''],
       ingredients: this.fb.array([this.createIngredient()]),
-      steps: this.fb.array([this.createStep()]), 
+      steps: this.fb.array([this.createStep()]),
     });
   }
 
@@ -72,31 +72,22 @@ export class CrearRecetaComponent implements OnInit {
   onSubmit(): void {
     if (this.recetaForm.valid) {
       const recetaData = this.recetaForm.value;
-  
+
       const ingredients = recetaData.ingredients.map((ingredient: any) => ({
         quantity: parseFloat(ingredient.quantity),
         unit: ingredient.unit,
         name: ingredient.name,
       }));
-  
+
       const steps = recetaData.steps.map((step: any) => step.description);
       const sanitizedSteps = steps.filter((step: string) => step && step.trim() !== '');
 
-      // Si hay un archivo seleccionado, primero subimos la imagen
-      if (this.file) {
-        from(this.graphqlService.uploadRecipeImage(this.file)).subscribe({
-          next: (response: any) => {
-            const imageUrl = response.data.uploadRecipeImage.url;
-            console.log('Imagen subida con éxito:', imageUrl);
-            handleRecipeCreation(imageUrl); // Crear receta con la URL de la imagen
-          },
-          error: (err) => {
-            console.error('Error al subir la imagen:', err);
-          },
-        });
-      }
-  
-      const handleRecipeCreation = (imageUrl: string) => {
+      const handleRecipeCreation = (imageUrl: string | null) => {
+        if (!this.authService.user) {
+          console.error('User is not authenticated');
+          return;
+        }
+
         this.graphqlService.createRecipe(
           recetaData.title,
           recetaData.description,
@@ -108,12 +99,27 @@ export class CrearRecetaComponent implements OnInit {
         )
           .then(response => {
             console.log('Receta creada:', response);
-            this.router.navigate(['/recetas']); // Redirige después de crear la receta
+            this.router.navigate(['/recetas']); // Redirect after creating the recipe
           })
           .catch(error => {
             console.error('Error al crear la receta', error);
           });
       };
+
+      // If a file is selected, upload the image first
+      if (this.file) {
+        console.log('Archivo seleccionado:', this.file); // Verify the selected file
+
+        this.graphqlService.uploadRecipeImage(this.file).then(response => {
+          const imageUrl = response.data.uploadRecipeImage.url;
+          console.log('Imagen subida con éxito:', imageUrl);
+          handleRecipeCreation(imageUrl); // Create recipe with the image URL
+        }).catch(err => {
+          console.error('Error al subir la imagen:', err);
+        });
+      } else {
+        handleRecipeCreation(null); // Create recipe without image
+      }
     }
   }
 

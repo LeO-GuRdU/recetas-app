@@ -6,6 +6,7 @@ const configureExpress = require('./expressConfig');
 const createApolloServer = require('./graphql/apolloServer');
 const authRoutes = require('./routes/auth.routes');
 const cors = require('cors');
+const jwt = require('jsonwebtoken'); // Import jsonwebtoken
 
 // Cargar variables de entorno
 dotenv.config();
@@ -45,7 +46,7 @@ app.get(
   passport.authenticate('google', { failureRedirect: '/login' }),
   async (req, res) => {  // Aquí agregamos 'async' para poder usar 'await'
     console.log('Callback recibido de Google...');
-    
+
     if (!req.user) {
       console.log('Error: No user authenticated');
       return res.redirect(`${process.env.FRONTEND_URL || 'http://localhost:4200'}?error=NoUser`);
