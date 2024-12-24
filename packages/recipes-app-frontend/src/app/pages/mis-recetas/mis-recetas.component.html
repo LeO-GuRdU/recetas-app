@@ -17,7 +17,7 @@
     <mat-card *ngFor="let receta of recetas" class="receta-card">
       <mat-card-header>
         <div mat-card-avatar class="receta-avatar">
-          <img [src]="receta.image" alt="Receta Image" />
+          <img [src]="getImageUrl(receta)"/>
         </div>
         <mat-card-title>{{ receta.title }}</mat-card-title>
         <mat-card-subtitle>{{ receta.category }}</mat-card-subtitle>
@@ -26,7 +26,7 @@
         <p>{{ receta.description }}</p>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-button>Ver más</button>
+        <button mat-button (click)="verReceta(receta.id)">Ver más</button>
       </mat-card-actions>
     </mat-card>
   </div>

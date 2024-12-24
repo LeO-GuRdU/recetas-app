@@ -137,4 +137,32 @@ export class GraphqlService {
       query: GET_USER_RECETAS_QUERY,
     });
   }
+
+  getReceta(id: string) {
+    const GET_RECETA_QUERY = gql`
+    query GetRecipeById($id: ID!) {
+      getRecipeById(id: $id) {
+        id
+        title
+        description
+        category
+        image
+        ingredients {
+          quantity
+          unit
+          name
+        }
+        steps
+        userId
+        createdAt
+      }
+    }
+  `;
+    const query = this.client.watchQuery({
+      query: GET_RECETA_QUERY,
+      variables: { id },
+    });
+
+    return query; // Retorna directamente el ObservableQuery
+  }
 }

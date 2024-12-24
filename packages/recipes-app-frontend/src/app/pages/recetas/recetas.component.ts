@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GraphqlService } from '../../services/graphql.service';
 import { Router } from '@angular/router';
+import {defaultImages} from "../../app.const";
 
 @Component({
   selector: 'app-recetas',
@@ -45,5 +46,13 @@ export class RecetasComponent implements OnInit {
 
   navigateToCreateRecipe(): void {
     this.router.navigate(['/crear-receta']);
+  }
+
+  verReceta(id: string) {
+    this.router.navigate(['/ver-receta', id]); // Navega a la vista de detalles
+  }
+
+  getImageUrl(receta: any): string {
+    return receta.image ? receta.image : defaultImages[receta.category];
   }
 }
