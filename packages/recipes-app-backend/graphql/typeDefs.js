@@ -1,7 +1,19 @@
 const { gql } = require('apollo-server-express');
+const { GraphQLUpload, processRequest } = require('graphql-upload');
 
 
 const typeDefs = gql`
+  # The implementation for this scalar is provided by the
+  # 'GraphQLUpload' export from the 'graphql-upload' package
+  # in the resolver map below.
+  scalar Upload
+  
+type File {
+    filename: String!
+    mimetype: String!
+    encoding: String!
+  }
+  
   type User {
     _id: ID!
     googleId: String!
@@ -9,8 +21,6 @@ const typeDefs = gql`
     name: String!
     createdAt: String
   }
-
-  scalar Upload
 
   type Recipe {
     id: ID!
@@ -59,7 +69,7 @@ const typeDefs = gql`
       title: String!
       description: String!
       category: String!
-      image: Upload
+      image: String
       userId: ID! # El usuario que crea la receta
       ingredients: [IngredientInput!]!
       steps: [String!]!

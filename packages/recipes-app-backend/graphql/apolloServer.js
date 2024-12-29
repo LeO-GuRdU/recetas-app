@@ -16,11 +16,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'apollo-require-preflight'], // Ensure the correct headers are allowed
 }));
 
-// Asegúrate de usar el middleware para gestionar uploads
-app.use(graphqlUploadExpress({
-  maxFileSize: 10000000,  // Max file size of 10 MB
-  maxFiles: 10,            // Only one file at a time
-}));
+// // Asegúrate de usar el middleware para gestionar uploads
+// app.use(graphqlUploadExpress({
+//   maxFileSize: 10000000,  // Max file size of 10 MB
+//   maxFiles: 10,            // Only one file at a time
+// }));
 
 const createApolloServer = async () => {
   const server = new ApolloServer({

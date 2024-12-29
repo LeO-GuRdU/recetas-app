@@ -4,3 +4,5 @@ export const defaultImages: { [key: string]: string } = {
   acompañamiento: 'assets/images/default-acompañamiento.jpeg',
   postre: 'assets/images/default-postre.jpeg',
 };
+
+export const imgPath = 'http://localhost:3000';

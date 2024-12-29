@@ -2,11 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const passport = require('passport');
+const { graphqlUploadExpress } = require('graphql-upload');
 const configureExpress = require('./expressConfig');
 const createApolloServer = require('./graphql/apolloServer');
 const authRoutes = require('./routes/auth.routes');
 const cors = require('cors');
 const jwt = require('jsonwebtoken'); // Import jsonwebtoken
+const path = require('path');
 
 // Cargar variables de entorno
 dotenv.config();
@@ -21,6 +23,15 @@ app.use(cors({
   credentials: true, // Permite que las cookies sean enviadas en las solicitudes
   allowedHeaders: ['Content-Type', 'Authorization', 'apollo-require-preflight'], // Asegúrate de que se permiten los encabezados correctos
 }));
+
+// Asegúrate de usar el middleware para gestionar uploads
+app.use(graphqlUploadExpress({
+  maxFileSize: 10000000,  // Max file size of 10 MB
+  maxFiles: 10,            // Only one file at a time
+}));
+
+// Servir el directorio estático para imágenes
+app.use('/uploads', express.static(path.join(__dirname, 'graphql/uploads')));
 
 // Configurar middlewares de Express
 configureExpress(app);

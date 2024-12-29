@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GraphqlService } from '../../services/graphql.service';
-import {defaultImages} from "../../app.const";
+import {defaultImages, imgPath} from "../../app.const";
 
 @Component({
   selector: 'app-ver-receta',
@@ -47,6 +47,6 @@ export class VerRecetaComponent implements OnInit {
   }
 
   getImageUrl(receta: any): string {
-    return receta.image ? receta.image : defaultImages[receta.category];
+    return receta.image ? imgPath + receta.image : defaultImages[receta.category];
   }
 }

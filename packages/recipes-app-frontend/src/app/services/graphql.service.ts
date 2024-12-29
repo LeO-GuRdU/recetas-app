@@ -22,7 +22,6 @@ export class GraphqlService {
 
   // Función para ejecutar una mutación con subida de archivos
   uploadRecipeImage(file: File): Promise<any> {
-    console.log('ME LLEGA ESTO', file);
     const UPLOAD_IMAGE_MUTATION = gql`
     mutation uploadRecipeImage($file: Upload!) {
       uploadRecipeImage(file: $file) {
@@ -55,7 +54,7 @@ export class GraphqlService {
         $title: String!,
         $description: String!,
         $category: String!,
-        $image: Upload,
+        $image: String,
         $ingredients: [IngredientInput!]!,
         $steps: [String!]!,
         $userId: ID!

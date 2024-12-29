@@ -1,10 +1,16 @@
 const User = require('../models/User');
 const Recipe = require('../models/Recipe');
+const {
+  GraphQLUpload,
+  graphqlUploadExpress, // A Koa implementation is also exported.
+} = require('graphql-upload');
 const fs = require('fs');
 const path = require('path');
 
 const resolvers = {
-  Upload: require('graphql-upload').GraphQLUpload, // Scalar para manejar la subida de archivos
+  // This maps the `Upload` scalar to the implementation provided
+  // by the `graphql-upload` package.
+  Upload: GraphQLUpload, // Scalar para manejar la subida de archivos
 
   Query: {
     // Traer todas las recetas (con filtros opcionales)
@@ -54,24 +60,13 @@ const resolvers = {
         throw new Error('Not authenticated');
       }
 
-      let imagePath = null;
-
-      if (image) {
-        const { createReadStream, filename } = await image;
-        imagePath = path.join(__dirname, 'uploads', filename);
-        await new Promise((resolve, reject) => {
-          createReadStream()
-              .pipe(fs.createWriteStream(imagePath))
-              .on('finish', resolve)
-              .on('error', reject);
-        });
-      }
+      const imagePath = image ?? null;
 
       const recipe = new Recipe({
         title,
         description,
         category,
-        image: imagePath ? `/uploads/${filename}` : null, // Use the image path if available
+        image: imagePath, // Use the image path if available
         userId: user,
         ingredients,
         steps,
@@ -83,7 +78,14 @@ const resolvers = {
     uploadRecipeImage: async (parent, { file }) => {
       try {
         const { createReadStream, filename, mimetype, encoding } = await file;
-        const imagePath = path.join(__dirname, 'uploads', filename);
+        const uploadsDir = path.join(__dirname, 'uploads');
+
+        // Ensure the uploads directory exists
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+
+        const imagePath = path.join(uploadsDir, filename);
 
         // Validate file type (optional)
         const allowedTypes = ['image/jpeg', 'image/png'];
@@ -91,12 +93,16 @@ const resolvers = {
           throw new Error('Invalid file type. Only JPEG and PNG are allowed.');
         }
 
+        console.log('Uploading file:', filename, mimetype, encoding);
+
         await new Promise((resolve, reject) => {
           createReadStream()
-            .pipe(fs.createWriteStream(imagePath))
-            .on('finish', resolve)
-            .on('error', reject);
+              .pipe(fs.createWriteStream(imagePath))
+              .on('finish', resolve)
+              .on('error', reject);
         });
+
+        console.log('File uploaded successfully:', imagePath);
 
         return { url: `/uploads/${filename}` };
       } catch (error) {
