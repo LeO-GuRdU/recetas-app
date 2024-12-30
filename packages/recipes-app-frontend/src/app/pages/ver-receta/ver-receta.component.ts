@@ -36,8 +36,6 @@ export class VerRecetaComponent implements OnInit {
 
         // Verificar si el usuario actual es el propietario
         const usuario = this.authService.user; // Obtener el ID del usuario actual
-        console.log('Usuario: ', usuario);
-        console.log('Receta: ', this.receta);
         this.esPropietario = this.receta.userId === usuario.id;
       },
       error: (err) => {

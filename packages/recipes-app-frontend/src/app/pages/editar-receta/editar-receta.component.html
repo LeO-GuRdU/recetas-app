@@ -1,4 +1,4 @@
-<div class="editar-receta-container" *ngIf="receta" xmlns="http://www.w3.org/1999/html">
+<div class="editar-receta-container" *ngIf="receta">
   <mat-card>
     <mat-card-header>
       <mat-card-title>Editar Receta</mat-card-title>
@@ -8,7 +8,7 @@
         <!-- Título -->
         <mat-form-field appearance="fill">
           <mat-label>Título</mat-label>
-          <input matInput formControlName="title" required value="{{ receta.title }}">
+          <input matInput formControlName="title" required>
           <mat-error *ngIf="recetaForm.get('title')?.hasError('required')">
             El título es obligatorio.
           </mat-error>
@@ -17,7 +17,7 @@
         <!-- Descripción -->
         <mat-form-field appearance="fill">
           <mat-label>Descripción</mat-label>
-          <textarea matInput formControlName="description" required value="{{ receta.description }}"></textarea>
+          <textarea matInput formControlName="description" required></textarea>
           <mat-error *ngIf="recetaForm.get('description')?.hasError('required')">
             La descripción es obligatoria.
           </mat-error>

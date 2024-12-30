@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
-import {ActivatedRoute, Router} from '@angular/router';
-import {GraphqlService} from "../../services/graphql.service";
-import {AuthService} from "../../services/auth.service";
+import { ActivatedRoute, Router } from '@angular/router';
+import { GraphqlService } from '../../services/graphql.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-editar-receta',
@@ -20,6 +20,7 @@ export class EditarRecetaComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -29,26 +30,6 @@ export class EditarRecetaComponent implements OnInit {
     if (recetaId) {
       this.cargarReceta(recetaId);
     }
-    // // Inicializar el formulario con datos existentes de la receta
-    // this.recetaForm = this.fb.group({
-    //   title: [this.receta?.title || '', Validators.required],
-    //   description: [this.receta?.description || '', Validators.required],
-    //   category: [this.receta?.category || '', Validators.required],
-    //   ingredients: this.fb.array(
-    //     this.receta?.ingredients.map((ingredient: any) =>
-    //       this.fb.group({
-    //         quantity: [ingredient.quantity, Validators.required],
-    //         unit: [ingredient.unit, Validators.required],
-    //         name: [ingredient.name, Validators.required]
-    //       })
-    //     ) || []
-    //   ),
-    //   steps: this.fb.array(
-    //     this.receta?.steps.map((step: any) =>
-    //       this.fb.group({ description: [step, Validators.required] })
-    //     ) || []
-    //   )
-    // });
   }
 
   cargarReceta(id: string): void {
@@ -57,11 +38,8 @@ export class EditarRecetaComponent implements OnInit {
     query.subscribe({
       next: (result: any) => {
         this.receta = result.data.getRecipeById;
-        this.inicializarFormulario(); // Inicializar el formulario cuando los datos estén listos
-        // Actualizar los valores del formulario con la receta
-        this.recetaForm.patchValue({
-          category: this.receta.category,
-        });
+        this.inicializarFormulario();
+        this.cdr.detectChanges(); // Hacer la detección de cambios manualmente
       },
       error: (err) => {
         console.error('Error al cargar la receta:', err);
@@ -77,7 +55,6 @@ export class EditarRecetaComponent implements OnInit {
     return this.recetaForm.get('steps') as FormArray;
   }
 
-  // Método para crear un ingrediente
   addIngredient(): void {
     this.ingredients.push(this.createIngredient());
   }
@@ -109,6 +86,7 @@ export class EditarRecetaComponent implements OnInit {
   }
 
   inicializarFormulario(): void {
+    console.log('Receta Traida: ', this.receta);
     this.recetaForm = this.fb.group({
       title: [this.receta?.title || '', Validators.required],
       description: [this.receta?.description || '', Validators.required],
