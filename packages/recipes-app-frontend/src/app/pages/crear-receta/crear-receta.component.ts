@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, FormArray,  Validators } from '@angular/forms';
 import { GraphqlService } from '../../services/graphql.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { from } from 'rxjs';
 
 @Component({
   selector: 'app-crear-receta',
@@ -11,6 +12,8 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class CrearRecetaComponent implements OnInit {
   recetaForm: FormGroup = new FormGroup({});
+  file: File | null = null;
+  uploadedImageUrl: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -26,7 +29,7 @@ export class CrearRecetaComponent implements OnInit {
       category: ['', Validators.required],
       image: [''],
       ingredients: this.fb.array([this.createIngredient()]),
-      steps: this.fb.array([this.createStep()]), 
+      steps: this.fb.array([this.createStep()]),
     });
   }
 
@@ -79,20 +82,52 @@ export class CrearRecetaComponent implements OnInit {
       const steps = recetaData.steps.map((step: any) => step.description);
       const sanitizedSteps = steps.filter((step: string) => step && step.trim() !== '');
 
-      this.graphqlService.createRecipe(
-        recetaData.title,
-        recetaData.description,
-        recetaData.category,
-        recetaData.image || null,
-        ingredients,
-        sanitizedSteps,
-        this.authService.user.id,
-      ).then(response => {
-        console.log('Receta creada:', response);
-        this.router.navigate(['/recetas']);  // Redirige después de crear la receta
-      }).catch(error => {
-        console.error('Error al crear la receta', error);
-      });
+      const handleRecipeCreation = (imageUrl: string | null) => {
+        if (!this.authService.user) {
+          console.error('User is not authenticated');
+          return;
+        }
+
+        this.graphqlService.createRecipe(
+          recetaData.title,
+          recetaData.description,
+          recetaData.category,
+          imageUrl,
+          ingredients,
+          sanitizedSteps,
+          this.authService.user.id
+        )
+          .then(response => {
+            console.log('Receta creada:', response);
+            this.router.navigate(['/recetas']); // Redirect after creating the recipe
+          })
+          .catch(error => {
+            console.error('Error al crear la receta', error);
+          });
+      };
+
+      // If a file is selected, upload the image first
+      if (this.file) {
+        console.log('Archivo seleccionado:', this.file); // Verify the selected file
+
+        this.graphqlService.uploadRecipeImage(this.file).then(response => {
+          const imageUrl = response.data.uploadRecipeImage.url;
+          console.log('Imagen subida con éxito:', imageUrl);
+          handleRecipeCreation(imageUrl); // Create recipe with the image URL
+        }).catch(err => {
+          console.error('Error al subir la imagen:', err);
+        });
+      } else {
+        handleRecipeCreation(null); // Create recipe without image
+      }
     }
   }
+
+    // Maneja el evento de selección del archivo
+    onFileSelected(event: Event): void {
+      const input = event.target as HTMLInputElement;
+      if (input.files && input.files.length > 0) {
+        this.file = input.files[0];
+      }
+    }
 }

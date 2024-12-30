@@ -1,0 +1,23 @@
+<div class="receta-container" *ngIf="receta">
+  <h1>{{ receta.title }}</h1>
+  <p><strong>Descripción:</strong> {{ receta.description }}</p>
+  <p><strong>Categoría:</strong> {{ receta.category }}</p>
+
+    <img [src]="getImageUrl(receta)" class="receta-imagen" />
+
+  <h3>Ingredientes:</h3>
+  <ul>
+    <li *ngFor="let ingrediente of receta.ingredients">
+      {{ ingrediente.quantity }} {{ ingrediente.unit }} de {{ ingrediente.name }}
+    </li>
+  </ul>
+
+  <h3>Pasos:</h3>
+  <ol>
+    <li *ngFor="let paso of receta.steps">{{ paso }}</li>
+  </ol>
+
+  <div *ngIf="esPropietario">
+    <button (click)="editarReceta()">Editar Receta</button>
+  </div>
+</div>

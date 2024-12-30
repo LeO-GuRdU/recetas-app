@@ -4,13 +4,12 @@ import { Router } from '@angular/router';
 import {defaultImages, imgPath} from "../../app.const";
 
 @Component({
-  selector: 'app-recetas',
-  templateUrl: './recetas.component.html',
-  styleUrls: ['./recetas.component.scss']
+  selector: 'app-mis-recetas',
+  templateUrl: './mis-recetas.component.html',
+  styleUrls: ['./mis-recetas.component.scss']
 })
-export class RecetasComponent implements OnInit {
+export class MisRecetasComponent implements OnInit {
   recetas: any[] = [];
-  limit: number = 10;
   isLoading: boolean = true;
   noRecipes: boolean = false;
 
@@ -22,10 +21,10 @@ export class RecetasComponent implements OnInit {
 
   loadRecetas(): void {
     this.isLoading = true;
-    this.graphqlService.getRecetas(this.limit).then(
+    this.graphqlService.getUserRecetas().then(
       (response: any) => {
-        if (response.data.getAllRecipes && response.data.getAllRecipes.length > 0) {
-          this.recetas = response.data.getAllRecipes;
+        if (response.data.getUserRecipes && response.data.getUserRecipes.length > 0) {
+          this.recetas = response.data.getUserRecipes;
           this.noRecipes = false;
         } else {
           this.noRecipes = true;
@@ -39,17 +38,12 @@ export class RecetasComponent implements OnInit {
     );
   }
 
-  onLimitChange(limit: number): void {
-    this.limit = limit;
-    this.loadRecetas();
+  verReceta(id: string) {
+    this.router.navigate(['/ver-receta', id]); // Navega a la vista de detalles
   }
 
   navigateToCreateRecipe(): void {
     this.router.navigate(['/crear-receta']);
-  }
-
-  verReceta(id: string) {
-    this.router.navigate(['/ver-receta', id]); // Navega a la vista de detalles
   }
 
   getImageUrl(receta: any): string {

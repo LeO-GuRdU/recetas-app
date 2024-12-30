@@ -1,23 +1,36 @@
 const User = require('../models/User');
 const Recipe = require('../models/Recipe');
+const {
+  GraphQLUpload,
+  graphqlUploadExpress, // A Koa implementation is also exported.
+} = require('graphql-upload');
+const fs = require('fs');
+const path = require('path');
 
 const resolvers = {
+  // This maps the `Upload` scalar to the implementation provided
+  // by the `graphql-upload` package.
+  Upload: GraphQLUpload, // Scalar para manejar la subida de archivos
+
   Query: {
     // Traer todas las recetas (con filtros opcionales)
-    getAllRecipes: async (_, { filter }) => {
+    getAllRecipes: async (_, { filter, limit }) => {
       const query = {};
       if (filter?.category) query.category = filter.category;
       if (filter?.title) query.title = { $regex: filter.title, $options: 'i' };
 
-      return await Recipe.find(query);
+      return await Recipe.find(query).sort({ createdAt: -1 }).limit(limit);
     },
     getRecipeById: async (_, { id }) => {
       return await Recipe.findById(id);
     },
 
     // Obtener las recetas de un usuario específico
-    async getUserRecipes(_, { userId }) {
-      return await Recipe.find({ userId }); // Filtrar por userId
+    getUserRecipes: async (_, __, { userId }) => {
+      if (!userId) {
+        throw new Error('Not authenticated');
+      }
+      return await Recipe.find({ userId });
     },
   },
 
@@ -38,39 +51,66 @@ const resolvers = {
         throw new Error('No se pudo crear o buscar el usuario.');
       }
     },
+
     // Crear una receta
     async createRecipe(_, { title, description, category, image, ingredients, steps, userId }, context) {
-      // Si no se pasa `userId` en las variables, intenta obtenerlo del contexto (token)
       const user = userId || context.userId;
 
       if (!user) {
-        throw new Error('No autenticado');
+        throw new Error('Not authenticated');
       }
 
-    
+      const imagePath = image ?? null;
+
       const recipe = new Recipe({
         title,
         description,
         category,
-        image,
-        userId: user, // Asociar la receta al usuario autenticado
+        image: imagePath, // Use the image path if available
+        userId: user,
         ingredients,
         steps,
       });
       await recipe.save();
       return recipe;
     },
-    // Modificar una receta
-    updateRecipe: async (_, { id, input }, { req }) => {
-      const user = authenticate(req);
-      const recipe = await Recipe.findOneAndUpdate(
-        { _id: id, userId: user.id }, // Solo permite modificar recetas propias
-        { $set: input },
-        { new: true }
-      );
-      if (!recipe) throw new Error('Receta no encontrada o no autorizada.');
-      return recipe;
+
+    uploadRecipeImage: async (parent, { file }) => {
+      try {
+        const { createReadStream, filename, mimetype, encoding } = await file;
+        const uploadsDir = path.join(__dirname, 'uploads');
+
+        // Ensure the uploads directory exists
+        if (!fs.existsSync(uploadsDir)) {
+          fs.mkdirSync(uploadsDir, { recursive: true });
+        }
+
+        const imagePath = path.join(uploadsDir, filename);
+
+        // Validate file type (optional)
+        const allowedTypes = ['image/jpeg', 'image/png'];
+        if (!allowedTypes.includes(mimetype)) {
+          throw new Error('Invalid file type. Only JPEG and PNG are allowed.');
+        }
+
+        console.log('Uploading file:', filename, mimetype, encoding);
+
+        await new Promise((resolve, reject) => {
+          createReadStream()
+              .pipe(fs.createWriteStream(imagePath))
+              .on('finish', resolve)
+              .on('error', reject);
+        });
+
+        console.log('File uploaded successfully:', imagePath);
+
+        return { url: `/uploads/${filename}` };
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        throw new Error('Error uploading the image.');
+      }
     },
+
     // Eliminar una receta
     deleteRecipe: async (_, { id }, { req }) => {
       const user = authenticate(req);

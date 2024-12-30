@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core'; // Usar Apollo Client directamente
-import { HttpLink } from '@apollo/client/link/http'; // Enlace HTTP para Apollo Client
+import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core';
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'; // Enlace para manejo de archivos
 
 @Injectable({
   providedIn: 'root',
@@ -9,20 +9,46 @@ export class GraphqlService {
   private client: ApolloClient<any>;
 
   constructor() {
-    // Configuración de Apollo Client
-    const httpLink = new HttpLink({
-      uri: 'http://localhost:3000/graphql',
-      credentials: 'include', // Permite el envío de cookies o credenciales
+    const uploadLink = createUploadLink({
+      uri: 'http://localhost:3000/graphql', // URL de tu backend GraphQL
+      credentials: 'include', // Permite envío de cookies o credenciales
     });
 
     this.client = new ApolloClient({
-      link: httpLink,
+      link: uploadLink, // Enlace configurado para manejar subidas de archivos
       cache: new InMemoryCache(), // Configuración de caché
     });
   }
 
-  // Función para ejecutar una mutación
-  createRecipe(title: string, description: string, category: string, image: string, ingredients: string[], steps: string[], userId: string) {
+  // Función para ejecutar una mutación con subida de archivos
+  uploadRecipeImage(file: File): Promise<any> {
+    const UPLOAD_IMAGE_MUTATION = gql`
+    mutation uploadRecipeImage($file: Upload!) {
+      uploadRecipeImage(file: $file) {
+        url
+      }
+    }
+  `;
+
+    return this.client.mutate({
+      mutation: UPLOAD_IMAGE_MUTATION,
+      variables: { file },
+      context: {
+        useMultipart: true, // Necesario para manejar archivos
+      },
+    });
+  }
+
+  // Función para ejecutar una mutación que crea una receta
+  createRecipe(
+    title: string,
+    description: string,
+    category: string,
+    image: string | null,
+    ingredients: { quantity: number; unit: string; name: string }[],
+    steps: string[],
+    userId: string
+  ): Promise<any> {
     const CREATE_RECIPE = gql`
       mutation createRecipe(
         $title: String!,
@@ -70,5 +96,72 @@ export class GraphqlService {
         userId,
       },
     });
+  }
+
+  getRecetas(limit: number): Promise<any> {
+    const GET_RECETAS_QUERY = gql`
+    query GetAllRecipes($limit: Int) {
+      getAllRecipes(limit: $limit) {
+        id
+        title
+        description
+        category
+        image
+        createdAt
+      }
+    }
+  `;
+
+    return this.client.query({
+      query: GET_RECETAS_QUERY,
+      variables: { limit },
+    });
+  }
+
+  getUserRecetas(): Promise<any> {
+    const GET_USER_RECETAS_QUERY = gql`
+    query GetUserRecipes {
+      getUserRecipes {
+        id
+        title
+        description
+        category
+        image
+        createdAt
+      }
+    }
+  `;
+
+    return this.client.query({
+      query: GET_USER_RECETAS_QUERY,
+    });
+  }
+
+  getReceta(id: string) {
+    const GET_RECETA_QUERY = gql`
+    query GetRecipeById($id: ID!) {
+      getRecipeById(id: $id) {
+        id
+        title
+        description
+        category
+        image
+        ingredients {
+          quantity
+          unit
+          name
+        }
+        steps
+        userId
+        createdAt
+      }
+    }
+  `;
+    const query = this.client.watchQuery({
+      query: GET_RECETA_QUERY,
+      variables: { id },
+    });
+
+    return query; // Retorna directamente el ObservableQuery
   }
 }
