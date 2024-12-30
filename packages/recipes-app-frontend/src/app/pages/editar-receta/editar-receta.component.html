@@ -1,0 +1,85 @@
+<div class="editar-receta-container" *ngIf="receta" xmlns="http://www.w3.org/1999/html">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Editar Receta</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="recetaForm" (ngSubmit)="onSubmit()">
+        <!-- Título -->
+        <mat-form-field appearance="fill">
+          <mat-label>Título</mat-label>
+          <input matInput formControlName="title" required value="{{ receta.title }}">
+          <mat-error *ngIf="recetaForm.get('title')?.hasError('required')">
+            El título es obligatorio.
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Descripción -->
+        <mat-form-field appearance="fill">
+          <mat-label>Descripción</mat-label>
+          <textarea matInput formControlName="description" required value="{{ receta.description }}"></textarea>
+          <mat-error *ngIf="recetaForm.get('description')?.hasError('required')">
+            La descripción es obligatoria.
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Categoría -->
+        <mat-form-field appearance="fill">
+          <mat-label>Categoría</mat-label>
+          <mat-select formControlName="category" required>
+            <mat-option value="entrada">Entrada</mat-option>
+            <mat-option value="acompanamiento">Acompañamiento</mat-option>
+            <mat-option value="principal">Plato Principal</mat-option>
+            <mat-option value="postre">Postre</mat-option>
+          </mat-select>
+          <mat-error *ngIf="recetaForm.get('category')?.hasError('required')">
+            La categoría es obligatoria.
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Ingredientes -->
+        <div formArrayName="ingredients">
+          <h3>Ingredientes</h3>
+          <div *ngFor="let ingredient of ingredients.controls; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <mat-label>Cantidad</mat-label>
+              <input matInput formControlName="quantity" type="number" required />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Unidad</mat-label>
+              <input matInput formControlName="unit" required />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" required />
+            </mat-form-field>
+            <button mat-icon-button color="warn" (click)="removeIngredient(i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        <button mat-button (click)="addIngredient()">Agregar Ingrediente</button>
+
+        <!-- Pasos -->
+        <div formArrayName="steps">
+          <h3>Pasos</h3>
+          <div *ngFor="let step of steps.controls; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <mat-label>Descripción del paso</mat-label>
+              <textarea matInput formControlName="description" required></textarea>
+            </mat-form-field>
+            <button mat-icon-button color="warn" (click)="removeStep(i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        <button mat-button (click)="addStep()">Agregar Paso</button>
+
+        <!-- Botón de guardar -->
+        <button mat-raised-button color="primary" type="submit" [disabled]="!recetaForm.valid">
+          Guardar Cambios
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

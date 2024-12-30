@@ -40,6 +40,7 @@ import {
 import { CrearRecetaComponent } from './pages/crear-receta/crear-receta.component';
 import { MisRecetasComponent } from './pages/mis-recetas/mis-recetas.component';
 import { VerRecetaComponent } from './pages/ver-receta/ver-receta.component';
+import { EditarRecetaComponent } from './pages/editar-receta/editar-receta.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { VerRecetaComponent } from './pages/ver-receta/ver-receta.component';
     CrearRecetaComponent,
     MisRecetasComponent,
     VerRecetaComponent,
+    EditarRecetaComponent,
   ],
   imports: [
     BrowserModule,

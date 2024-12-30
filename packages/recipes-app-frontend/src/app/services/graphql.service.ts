@@ -98,6 +98,31 @@ export class GraphqlService {
     });
   }
 
+  // Función para ejecutar una mutación que actualiza una receta
+  updateRecipe(id: string, title: string, description: string, category: string, ingredients: any[], steps: string[]): Promise<any> {
+    const UPDATE_RECIPE_MUTATION = gql`
+      mutation updateRecipe($id: ID!, $title: String, $description: String, $category: String, $ingredients: [IngredientInput!], $steps: [String!]) {
+        updateRecipe(id: $id, title: $title, description: $description, category: $category, ingredients: $ingredients, steps: $steps) {
+          id
+          title
+          description
+          category
+          ingredients {
+            quantity
+            unit
+            name
+          }
+          steps
+        }
+      }
+    `;
+
+    return this.client.mutate({
+      mutation: UPDATE_RECIPE_MUTATION,
+      variables: { id, title, description, category, ingredients, steps },
+    });
+  }
+
   getRecetas(limit: number): Promise<any> {
     const GET_RECETAS_QUERY = gql`
     query GetAllRecipes($limit: Int) {

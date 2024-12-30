@@ -24,4 +24,9 @@ export class RecetasService {
   createReceta(receta: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, receta);
   }
+
+  // Editar receta existente
+  updateReceta(receta: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${receta.id}`, receta);
+  }
 }
