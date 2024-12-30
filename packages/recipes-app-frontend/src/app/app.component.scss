@@ -8,24 +8,88 @@
 .sidenav {
   width: $sidebar-width;
   padding-top: 20px;
+  background-color: $primary-color;
 }
 
 .profile-card {
+  margin: 20px auto;
+  border-radius: 15px;
+  background-color: #4caf50; /* Fondo verde */
+  color: white; /* Texto en blanco */
+  padding: 20px;
+  max-width: 300px;
+  text-align: center; /* Centra todo el contenido */
+}
+
+.avatar-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+.avatar {
+  width: 100px; /* Tamaño mediano */
+  height: 100px;
+  border-radius: 50%; /* Imagen circular */
+  border: 3px solid #3f51b5; /* Borde azul */
+}
+
+.user-details {
+  .username {
+    font-size: 18px;
+    margin: 0;
+    color: white; /* Texto en blanco */
+  }
+
+  .separator {
+    margin: 10px auto;
+    width: 60%;
+    height: 3px;
+    background-color: yellow; /* Línea amarilla */
+  }
 }
 
 .profile {
   padding: 10px;
 }
 
+.profile .avatar {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
 .profile .avatar img {
   @include avatar-size($avatar-size);
+  border-radius: 50%; /* Imagen redondeada */
+}
+
+.profile .username {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: $primary-color;
   color: white;
   padding: 0 16px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+button {
+  color: white; /* Texto blanco */
+}
+
+mat-icon {
+  margin-right: 5px;
 }
 
 mat-sidenav-content {

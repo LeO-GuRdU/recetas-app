@@ -42,7 +42,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
   .catch((err) => console.error('Error conectando a MongoDB:', err));
 
 // Configurar Passport (puedes separar esta configuración también si es necesario)
-require('./auth/passportConfig'); // Crea este archivo si quieres modularizar la configuración de Passport
+require('./auth/passportConfig');
+const {generateToken} = require("./auth/jwt"); // Crea este archivo si quieres modularizar la configuración de Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -96,9 +97,7 @@ app.get(
       const { data } = await response.json();
       console.log('GraphQL response:', data); // Verificar la respuesta de GraphQL
 
-      const token = jwt.sign({ id: data.createOrFindUser._id }, process.env.JWT_SECRET || 'default_secret', {
-        expiresIn: '1d',
-      });
+      const token = generateToken(req.user); // Generar el token JWT con el usuario autenticado
 
       // Configurar la cookie con el token JWT
       res.cookie('token', token, {

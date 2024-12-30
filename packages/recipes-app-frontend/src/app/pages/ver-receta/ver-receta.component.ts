@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GraphqlService } from '../../services/graphql.service';
 import {defaultImages, imgPath} from "../../app.const";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-ver-receta',
@@ -15,7 +16,8 @@ export class VerRecetaComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private graphqlService: GraphqlService
+    private graphqlService: GraphqlService,
+    private readonly authService: AuthService,
   ) {}
 
   ngOnInit(): void {
@@ -33,8 +35,10 @@ export class VerRecetaComponent implements OnInit {
         this.receta = result.data.getRecipeById;
 
         // Verificar si el usuario actual es el propietario
-        const usuarioId = localStorage.getItem('userId'); // Obtener el ID del usuario actual
-        this.esPropietario = this.receta.userId === usuarioId;
+        const usuario = this.authService.user; // Obtener el ID del usuario actual
+        console.log('Usuario: ', usuario);
+        console.log('Receta: ', this.receta);
+        this.esPropietario = this.receta.userId === usuario.id;
       },
       error: (err) => {
         console.error('Error al cargar la receta:', err);

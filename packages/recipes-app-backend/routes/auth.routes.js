@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const {generateToken} = require("../auth/jwt");
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -31,7 +32,7 @@ router.post('/login', async (req, res) => {
     const isMatch = await user.comparePassword(password);
     if (!isMatch) return res.status(400).json({ message: 'Contraseña incorrecta' });
 
-    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1d' });
+    const token = generateToken(user);
 
     res.status(200).json({ token });
   } catch (err) {

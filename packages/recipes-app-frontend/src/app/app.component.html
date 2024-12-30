@@ -11,13 +11,15 @@
       <!-- Perfil de usuario -->
       <div class="profile">
         <mat-card class="profile-card">
-          <mat-card-header>
-            <div mat-card-avatar class="avatar">
-              <img [src]="user?.photoUrl" alt="User Avatar" />
-            </div>
-            <mat-card-title>{{ user?.email }}</mat-card-title>
-          </mat-card-header>
+          <div class="avatar-container">
+            <img [src]="getImageUrl(user)" alt="User Avatar" class="avatar" />
+          </div>
+          <div class="user-details">
+            <h2 class="username">{{ user?.username ?? 'Usuario Anónimo' }}</h2>
+            <div class="separator"></div>
+          </div>
         </mat-card>
+
       </div>
 
       <!-- Menú -->
@@ -45,6 +47,13 @@
           <mat-icon>menu</mat-icon>
         </button>
         <span>App de Recetas</span>
+
+        <!-- Botón de Logout -->
+        <span class="spacer"></span>
+        <button mat-button color="accent" (click)="onLogout()">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
       </mat-toolbar>
 
       <!-- Aquí va el contenido principal -->

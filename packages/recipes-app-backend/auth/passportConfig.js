@@ -23,16 +23,19 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       console.log('Google Profile:', profile); // Verificación del perfil de Google
       try {
-        const user = await User.findOne({ googleId: profile.id });
+        let user = await User.findOne({ googleId: profile.id });
 
         if (!user) {
-          const newUser = new User({
+          user = new User({
             googleId: profile.id,
             email: profile.emails[0].value,
             name: profile.displayName,
+            avatarUrl: profile.photos[0].value, // Save the avatar URL
           });
-          await newUser.save();
-          return done(null, newUser);
+          await user.save();
+        } else if (!user.avatarUrl) {
+            user.avatarUrl = profile.photos[0].value;
+            await user.save();
         }
 
         return done(null, user); // Si el usuario ya existe, continuar
