@@ -6,6 +6,7 @@ const {
 } = require('graphql-upload');
 const fs = require('fs');
 const path = require('path');
+const mongoose = require('mongoose');
 
 const resolvers = {
   // This maps the `Upload` scalar to the implementation provided
@@ -73,6 +74,29 @@ const resolvers = {
       });
       await recipe.save();
       return recipe;
+    },
+
+    updateRecipe: async (_, { id, steps, ingredients, ...rest }) => {
+      try {
+        // Convertir el id a un ObjectId usando 'new' correctamente
+        const objectId = new mongoose.Types.ObjectId(id);
+
+        await Recipe.updateOne(
+            { _id: objectId },
+            {
+              $set: {
+                ...rest,
+                steps, // Este ya será un array de strings
+                ingredients, // Este será un array de objetos
+              },
+            }
+        );
+
+        // Recupera el documento actualizado
+        return await Recipe.findById(id);
+      } catch (error) {
+        throw new Error(`Error al actualizar la receta: ${error.message}`);
+      }
     },
 
     uploadRecipeImage: async (parent, { file }) => {

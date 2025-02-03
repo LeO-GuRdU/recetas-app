@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core';
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'; // Enlace para manejo de archivos
+import { RecipeFilterInput } from '../interfaces/app.interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -98,10 +99,35 @@ export class GraphqlService {
     });
   }
 
-  getRecetas(limit: number): Promise<any> {
+  // Función para ejecutar una mutación que actualiza una receta
+  updateRecipe(id: string, title: string, description: string, category: string, ingredients: any[], steps: string[]): Promise<any> {
+    const UPDATE_RECIPE_MUTATION = gql`
+      mutation updateRecipe($id: ID!, $title: String, $description: String, $category: String, $ingredients: [IngredientInput!], $steps: [String!]) {
+        updateRecipe(id: $id, title: $title, description: $description, category: $category, ingredients: $ingredients, steps: $steps) {
+          id
+          title
+          description
+          category
+          ingredients {
+            quantity
+            unit
+            name
+          }
+          steps
+        }
+      }
+    `;
+
+    return this.client.mutate({
+      mutation: UPDATE_RECIPE_MUTATION,
+      variables: { id, title, description, category, ingredients, steps },
+    });
+  }
+
+  getRecetas(limit: number, tipo?: RecipeFilterInput): Promise<any> {
     const GET_RECETAS_QUERY = gql`
-    query GetAllRecipes($limit: Int) {
-      getAllRecipes(limit: $limit) {
+    query GetAllRecipes($limit: Int, $tipo: RecipeFilterInput) {
+      getAllRecipes(limit: $limit, filter: $tipo) {
         id
         title
         description
@@ -114,7 +140,7 @@ export class GraphqlService {
 
     return this.client.query({
       query: GET_RECETAS_QUERY,
-      variables: { limit },
+      variables: { limit, tipo },
     });
   }
 

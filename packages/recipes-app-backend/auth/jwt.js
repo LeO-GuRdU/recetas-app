@@ -1,8 +1,14 @@
 const jwt = require('jsonwebtoken');
 
 const generateToken = (user) => {
-  const payload = { id: user._id, email: user.email };
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+  console.log('User to be signed:', user);
+  const payload = {
+    id: user._id,
+    avatarUrl: user.avatarUrl,
+    username: user.name,
+    userEmail: user.email,
+  };
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '15d' });
 };
 
 const verifyToken = (token) => {

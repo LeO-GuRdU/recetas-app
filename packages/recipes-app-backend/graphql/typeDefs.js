@@ -77,14 +77,13 @@ type File {
 
     # Modificar una receta
     updateRecipe(
-      id: ID!
-      title: String
-      description: String
-      category: String
-      image: Upload
-      ingredients: [IngredientInput!]
-      steps: [String!]
-    ): Recipe
+        id: ID!
+        title: String
+        description: String
+        category: String
+        steps: [String!] # Pasos como array de strings
+        ingredients: [IngredientInput!] # Ingredientes como array de objetos
+    ): Recipe!
 
     # Subir imagen de receta
     uploadRecipeImage(file: Upload!): FileResponse!

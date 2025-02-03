@@ -7,6 +7,7 @@ import { CrearRecetaComponent } from './pages/crear-receta/crear-receta.componen
 import { AuthGuard } from './guards/auth.guard';
 import {MisRecetasComponent} from "./pages/mis-recetas/mis-recetas.component";
 import {VerRecetaComponent} from "./pages/ver-receta/ver-receta.component";
+import {EditarRecetaComponent} from "./pages/editar-receta/editar-receta.component";
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -15,6 +16,7 @@ const routes: Routes = [
   { path: 'mis-recetas', component: MisRecetasComponent, canActivate: [AuthGuard]  },
   { path: 'crear-receta', component: CrearRecetaComponent, canActivate: [AuthGuard] },
   { path: 'ver-receta/:id', component: VerRecetaComponent, canActivate: [AuthGuard] },
+  { path: 'editar-receta/:id', component: EditarRecetaComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/login' },
 ];

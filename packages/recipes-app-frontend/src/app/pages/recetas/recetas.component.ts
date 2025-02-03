@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GraphqlService } from '../../services/graphql.service';
 import { Router } from '@angular/router';
 import {defaultImages, imgPath} from "../../app.const";
+import { RecipeFilterInput } from 'src/app/interfaces/app.interfaces';
 
 @Component({
   selector: 'app-recetas',
@@ -11,6 +12,11 @@ import {defaultImages, imgPath} from "../../app.const";
 export class RecetasComponent implements OnInit {
   recetas: any[] = [];
   limit: number = 10;
+  tipo: string = '';
+  filtro: RecipeFilterInput = {
+    category: '',
+    title: ''
+  };
   isLoading: boolean = true;
   noRecipes: boolean = false;
 
@@ -22,7 +28,7 @@ export class RecetasComponent implements OnInit {
 
   loadRecetas(): void {
     this.isLoading = true;
-    this.graphqlService.getRecetas(this.limit).then(
+    this.graphqlService.getRecetas(this.limit, this.filtro).then(
       (response: any) => {
         if (response.data.getAllRecipes && response.data.getAllRecipes.length > 0) {
           this.recetas = response.data.getAllRecipes;
@@ -41,6 +47,11 @@ export class RecetasComponent implements OnInit {
 
   onLimitChange(limit: number): void {
     this.limit = limit;
+    this.loadRecetas();
+  }
+
+  onTipoChange(tipo: string): void {
+    this.filtro.category = tipo;
     this.loadRecetas();
   }
 
