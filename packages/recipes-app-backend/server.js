@@ -18,7 +18,11 @@ const PORT = process.env.PORT || 3000;
 
 // Middlewares
 app.use(cors({
-  origin: 'http://localhost:4200',  // Asegúrate de que aquí esté el origen correcto (tu frontend)
+  origin: [
+    "http://localhost:4200", // Frontend local
+    "http://localhost:3000", // Para las peticiones a GraphQL
+    "https://studio.apollographql.com" // Permite Apollo Studio
+  ], 
   methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Asegúrate de que se permiten los métodos correctos
   credentials: true, // Permite que las cookies sean enviadas en las solicitudes
   allowedHeaders: ['Content-Type', 'Authorization', 'apollo-require-preflight'], // Asegúrate de que se permiten los encabezados correctos
@@ -103,7 +107,7 @@ app.get(
       res.cookie('token', token, {
         httpOnly: true, // La cookie no puede ser leída por JavaScript del cliente
         secure: false, // Cambiar a true en producción con HTTPS
-        sameSite: 'strict', // Evita CSRF
+        sameSite: "None", // Permite cookies sin HTTPS en el mismo dominio
         maxAge: 24 * 60 * 60 * 1000, // La cookie expirará en 1 día
       });
 

@@ -10,12 +10,29 @@
     </div>
   </mat-toolbar>
 
+  <!-- Barra de filtro por tipo de receta -->
+  <mat-toolbar color="accent" class="recetas-filter">
+    <span>Filtrar por tipo:</span>
+    <mat-button-toggle-group [(ngModel)]="tipo" (change)="onTipoChange(tipo)" aria-label="Seleccionar tipo">
+      <mat-button-toggle value="">Todos</mat-button-toggle>
+      <mat-button-toggle value="entrada">Entrada</mat-button-toggle>
+      <mat-button-toggle value="acompanamiento">Acompañamiento</mat-button-toggle>
+      <mat-button-toggle value="principal">Plato Principal</mat-button-toggle>
+      <mat-button-toggle value="postre">Postre</mat-button-toggle>
+    </mat-button-toggle-group>
+  </mat-toolbar>
+
   <div *ngIf="isLoading" class="loading-spinner">
     <mat-spinner></mat-spinner>
     <p>Cargando recetas...</p>
   </div>
 
-  <div *ngIf="noRecipes" class="no-recipes-message">
+  <div *ngIf="noRecipes && tipo !== ''" class="no-recipes-message">
+    <p>Aún no tenemos recetas en el sitio para esta categoría.</p>
+    <button mat-raised-button color="accent" (click)="navigateToCreateRecipe()">Crea tu primera receta</button>
+  </div>
+
+  <div *ngIf="noRecipes && tipo == ''" class="no-recipes-message">
     <p>Aún no tenemos recetas en el sitio.</p>
     <button mat-raised-button color="accent" (click)="navigateToCreateRecipe()">Crea tu primera receta</button>
   </div>

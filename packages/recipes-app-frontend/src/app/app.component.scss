@@ -94,14 +94,22 @@ mat-icon {
 
 mat-sidenav-content {
   padding: 16px;
+  background-image: url('../assets/images/site-background-pattern.jpg');
+  background-size: auto; /* Mantén el tamaño original de la imagen */
+  background-repeat: repeat; /* Permite que la imagen se repita */
+  background-position: top left; /* Inicia la repetición desde la esquina superior izquierda */
+  min-height: 100vh; /* Asegura que cubra toda la altura */
 }
 
 mat-nav-list a {
   display: flex;
   align-items: center;
   padding: 10px 16px;
+  color: white !important; /* Texto blanco */
 
   mat-icon {
     margin-right: 10px;
+    vertical-align: middle;
+    color: white;
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApolloClient, InMemoryCache, gql } from '@apollo/client/core';
 import createUploadLink from 'apollo-upload-client/createUploadLink.mjs'; // Enlace para manejo de archivos
+import { RecipeFilterInput } from '../interfaces/app.interfaces';
 
 @Injectable({
   providedIn: 'root',
@@ -123,10 +124,10 @@ export class GraphqlService {
     });
   }
 
-  getRecetas(limit: number): Promise<any> {
+  getRecetas(limit: number, tipo?: RecipeFilterInput): Promise<any> {
     const GET_RECETAS_QUERY = gql`
-    query GetAllRecipes($limit: Int) {
-      getAllRecipes(limit: $limit) {
+    query GetAllRecipes($limit: Int, $tipo: RecipeFilterInput) {
+      getAllRecipes(limit: $limit, filter: $tipo) {
         id
         title
         description
@@ -139,7 +140,7 @@ export class GraphqlService {
 
     return this.client.query({
       query: GET_RECETAS_QUERY,
-      variables: { limit },
+      variables: { limit, tipo },
     });
   }
 
