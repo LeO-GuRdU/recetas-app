@@ -1,23 +1,37 @@
 <div class="receta-container" *ngIf="receta">
-  <h1>{{ receta.title }}</h1>
-  <p><strong>Descripción:</strong> {{ receta.description }}</p>
-  <p><strong>Categoría:</strong> {{ receta.category }}</p>
+  <div class="receta-header">
+    <h1>{{ receta.title }}</h1>
+    <span class="receta-categoria">{{ receta.category }}</span>
+  </div>
 
-    <img [src]="getImageUrl(receta)" class="receta-imagen" />
+  <div class="receta-main">
+    <div class="receta-info">
+      <img [src]="getImageUrl(receta)" alt="{{ receta.title }}" class="receta-imagen" />
 
-  <h3>Ingredientes:</h3>
-  <ul>
-    <li *ngFor="let ingrediente of receta.ingredients">
-      {{ ingrediente.quantity }} {{ ingrediente.unit }} de {{ ingrediente.name }}
-    </li>
-  </ul>
+      <div class="receta-detalles">
+        <h2>Descripción</h2>
+        <p><strong>{{ receta.description.description }}</strong></p>
+        <p><strong>Tiempo de cocción:</strong> {{ receta.description.time }} minutos</p>
+        <p><strong>Porciones:</strong> {{ receta.description.quantity }}</p>
+      </div>
+    </div>
 
-  <h3>Pasos:</h3>
-  <ol>
-    <li *ngFor="let paso of receta.steps">{{ paso }}</li>
-  </ol>
+    <div class="receta-instrucciones">
+      <h3>Ingredientes</h3>
+      <ul>
+        <li *ngFor="let ingrediente of receta.ingredients">
+          {{ ingrediente.quantity }} {{ ingrediente.unit }} de {{ ingrediente.name }}
+        </li>
+      </ul>
 
-  <div *ngIf="esPropietario">
-    <button (click)="editarReceta()">Editar Receta</button>
+      <h3>Instrucciones</h3>
+      <ol>
+        <li *ngFor="let paso of receta.steps">{{ paso }}</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="receta-footer" *ngIf="esPropietario">
+    <button (click)="editarReceta()" class="editar-btn">Editar Receta</button>
   </div>
 </div>

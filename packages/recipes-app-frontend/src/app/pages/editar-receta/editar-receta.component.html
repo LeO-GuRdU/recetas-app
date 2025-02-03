@@ -15,13 +15,23 @@
         </mat-form-field>
 
         <!-- Descripción -->
-        <mat-form-field appearance="fill">
-          <mat-label>Descripción</mat-label>
-          <textarea matInput formControlName="description" required></textarea>
-          <mat-error *ngIf="recetaForm.get('description')?.hasError('required')">
-            La descripción es obligatoria.
-          </mat-error>
-        </mat-form-field>
+        <div formArrayName="description">
+          <h3>Descripción</h3>
+          <div *ngFor="let ingredient of ingredients.controls; let i = index" [formGroupName]="i">
+            <mat-form-field appearance="fill">
+              <mat-label>Descripción</mat-label>
+              <input matInput formControlName="description" required >
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Tiempo de cocción</mat-label>
+              <input matInput formControlName="time" type="number" required />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Porciones</mat-label>
+              <input matInput formControlName="quantity" type="number" required />
+            </mat-form-field>
+          </div>
+        </div>
 
         <!-- Categoría -->
         <mat-form-field appearance="fill">
