@@ -7,11 +7,18 @@ const IngredientSchema = new mongoose.Schema({
   name: { type: String, required: true },
 });
 
+// Esquema de Descripción
+const DescriptionSchema = new mongoose.Schema({
+  description: { type: String, required: true },
+  time: { type: Number, required: true },
+  quantity: { type: Number, required: true },
+});
+
 // Esquema de Recetas
 const RecipeSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: DescriptionSchema, required: true },
     category: { type: String, enum: ['entrada', 'acompañamiento', 'principal', 'postre'], required: true },
     image: { type: String },  // Ruta relativa de la imagen guardada
     ingredients: [IngredientSchema],

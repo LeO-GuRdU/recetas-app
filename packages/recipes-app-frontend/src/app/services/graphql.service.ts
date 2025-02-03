@@ -43,7 +43,7 @@ export class GraphqlService {
   // Función para ejecutar una mutación que crea una receta
   createRecipe(
     title: string,
-    description: string,
+    description: { description: string; time: number; quantity: number },
     category: string,
     image: string | null,
     ingredients: { quantity: number; unit: string; name: string }[],
@@ -53,7 +53,7 @@ export class GraphqlService {
     const CREATE_RECIPE = gql`
       mutation createRecipe(
         $title: String!,
-        $description: String!,
+        $description: DescriptionInput!,
         $category: String!,
         $image: String,
         $ingredients: [IngredientInput!]!,
@@ -71,7 +71,11 @@ export class GraphqlService {
         ) {
           id
           title
-          description
+          description {
+            description
+            time
+            quantity
+          }
           category
           image
           ingredients {
@@ -102,11 +106,15 @@ export class GraphqlService {
   // Función para ejecutar una mutación que actualiza una receta
   updateRecipe(id: string, title: string, description: string, category: string, ingredients: any[], steps: string[]): Promise<any> {
     const UPDATE_RECIPE_MUTATION = gql`
-      mutation updateRecipe($id: ID!, $title: String, $description: String, $category: String, $ingredients: [IngredientInput!], $steps: [String!]) {
+      mutation updateRecipe($id: ID!, $title: String, $description: DescriptionInput, $category: String, $ingredients: [IngredientInput!], $steps: [String!]) {
         updateRecipe(id: $id, title: $title, description: $description, category: $category, ingredients: $ingredients, steps: $steps) {
           id
           title
-          description
+          description {
+            description
+            time
+            quantity
+          }
           category
           ingredients {
             quantity
@@ -130,7 +138,11 @@ export class GraphqlService {
       getAllRecipes(limit: $limit, filter: $tipo) {
         id
         title
-        description
+        description {
+            description
+            time
+            quantity
+        }
         category
         image
         createdAt
@@ -150,7 +162,11 @@ export class GraphqlService {
       getUserRecipes {
         id
         title
-        description
+        description {
+            description
+            time
+            quantity
+        }
         category
         image
         createdAt
@@ -169,7 +185,11 @@ export class GraphqlService {
       getRecipeById(id: $id) {
         id
         title
-        description
+        description {
+            description
+            time
+            quantity
+        }
         category
         image
         ingredients {

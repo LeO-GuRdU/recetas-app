@@ -25,7 +25,7 @@ type File {
   type Recipe {
     id: ID!
     title: String!
-    description: String!
+    description: Description!
     category: String!
     image: String # Ruta o nombre del archivo guardado
     ingredients: [Ingredient!]!
@@ -38,6 +38,12 @@ type File {
     quantity: Float!
     unit: String!
     name: String!
+  }
+
+  type Description {
+    description: String!
+    time: Float!
+    quantity: Float!
   }
 
   type AuthResponse {
@@ -67,7 +73,7 @@ type File {
     # Crear una nueva receta
     createRecipe(
       title: String!
-      description: String!
+      description: DescriptionInput!
       category: String!
       image: String
       userId: ID! # El usuario que crea la receta
@@ -79,7 +85,7 @@ type File {
     updateRecipe(
         id: ID!
         title: String
-        description: String
+        description: DescriptionInput
         category: String
         steps: [String!] # Pasos como array de strings
         ingredients: [IngredientInput!] # Ingredientes como array de objetos
@@ -97,10 +103,16 @@ type File {
 
   input RecipeInput {
     title: String!
-    description: String!
+    description: DescriptionInput!
     category: String!
     ingredients: [IngredientInput!]!
     steps: [String!]!
+  }
+
+  input DescriptionInput {
+    description: String!
+    time: Float!
+    quantity: Float!
   }
 
   input IngredientInput {
