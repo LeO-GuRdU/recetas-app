@@ -1,5 +1,5 @@
-<div class="recetas-container">
-  <mat-toolbar color="primary" class="recetas-toolbar">
+<div class="mis-recetas-container">
+  <mat-toolbar color="primary" class="mis-recetas-toolbar">
     <span>Mis Recetas</span>
   </mat-toolbar>
 
@@ -13,21 +13,28 @@
     <button mat-raised-button color="accent" (click)="navigateToCreateRecipe()">Crea tu primera receta</button>
   </div>
 
-  <div *ngIf="!isLoading && !noRecipes" class="recetas-list">
-    <mat-card *ngFor="let receta of recetas" class="receta-card">
-      <mat-card-header>
-        <div mat-card-avatar class="receta-avatar">
-          <img [src]="getImageUrl(receta)"/>
-        </div>
-        <mat-card-title>{{ receta.title }}</mat-card-title>
-        <mat-card-subtitle>{{ receta.category }}</mat-card-subtitle>
-      </mat-card-header>
+  <div *ngIf="!isLoading && !noRecipes" class="mis-recetas-list">
+    <mat-card *ngFor="let receta of recetas" class="mis-receta-card">
       <mat-card-content>
-        <p>{{ receta.description.description }}</p>
+        <h2 class="mis-receta-titulo">{{ receta.title }}</h2>
+
+        <div class="mis-receta-imagen">
+          <img [src]="getImageUrl(receta)" alt="Imagen de la receta" />
+        </div>
+
+        <h3 class="mis-receta-categoria">{{ receta.category | titlecase }}</h3>
+
+        <p class="mis-receta-descripcion">{{ receta.description.description }}</p>
+        <p><strong>⏳ Tiempo:</strong> {{ receta.description.time }} min</p>
+        <p><strong>🍽 Porciones:</strong> {{ receta.description.quantity }}</p>
+
+        <div class="mis-receta-actions">
+          <button mat-raised-button color="primary" (click)="verReceta(receta.id)" class="ver-receta-btn">
+            <mat-icon>visibility</mat-icon>
+            Ver Receta
+          </button>
+        </div>
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-button (click)="verReceta(receta.id)">Ver más</button>
-      </mat-card-actions>
     </mat-card>
   </div>
 </div>

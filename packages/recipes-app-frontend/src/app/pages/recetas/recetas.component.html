@@ -10,7 +10,6 @@
     </div>
   </mat-toolbar>
 
-  <!-- Barra de filtro por tipo de receta -->
   <mat-toolbar color="accent" class="recetas-filter">
     <span>Filtrar por tipo:</span>
     <mat-button-toggle-group [(ngModel)]="tipo" (change)="onTipoChange(tipo)" aria-label="Seleccionar tipo">
@@ -27,31 +26,25 @@
     <p>Cargando recetas...</p>
   </div>
 
-  <div *ngIf="noRecipes && tipo !== ''" class="no-recipes-message">
-    <p>Aún no tenemos recetas en el sitio para esta categoría.</p>
-    <button mat-raised-button color="accent" (click)="navigateToCreateRecipe()">Crea tu primera receta</button>
-  </div>
-
-  <div *ngIf="noRecipes && tipo == ''" class="no-recipes-message">
-    <p>Aún no tenemos recetas en el sitio.</p>
+  <div *ngIf="noRecipes" class="no-recipes-message">
+    <p>No hay recetas disponibles.</p>
     <button mat-raised-button color="accent" (click)="navigateToCreateRecipe()">Crea tu primera receta</button>
   </div>
 
   <div *ngIf="!isLoading && !noRecipes" class="recetas-list">
     <mat-card *ngFor="let receta of recetas" class="receta-card">
-      <mat-card-header>
-        <div mat-card-avatar class="receta-avatar">
-          <img [src]="getImageUrl(receta)" alt="Receta Image" />
-        </div>
-        <mat-card-title>{{ receta.title }}</mat-card-title>
-        <mat-card-subtitle>{{ receta.category }}</mat-card-subtitle>
-      </mat-card-header>
+      <img [src]="getImageUrl(receta)" alt="Imagen de la receta" class="receta-imagen" />
+
       <mat-card-content>
-        <p>{{ receta.description.description }}</p>
+        <h2 class="receta-titulo">{{ receta.title }}</h2>
+        <h3 class="receta-categoria">{{ receta.category | titlecase }}</h3>
+
+        <p class="receta-descripcion">{{ receta.description.description }}</p>
+        <p><strong>⏳ Tiempo:</strong> {{ receta.description.time }} min</p>
+        <p><strong>🍽 Porciones:</strong> {{ receta.description.quantity }}</p>
+
+        <button mat-raised-button color="primary" (click)="verReceta(receta.id)">Ver más</button>
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-button (click)="verReceta(receta.id)">Ver más</button>
-      </mat-card-actions>
     </mat-card>
   </div>
 </div>

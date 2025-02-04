@@ -107,7 +107,7 @@ app.get(
       res.cookie('token', token, {
         httpOnly: true, // La cookie no puede ser leída por JavaScript del cliente
         secure: false, // Cambiar a true en producción con HTTPS
-        sameSite: "None", // Permite cookies sin HTTPS en el mismo dominio
+        sameSite: "lax", // Permite cookies sin HTTPS en el mismo dominio
         maxAge: 24 * 60 * 60 * 1000, // La cookie expirará en 1 día
       });
 
