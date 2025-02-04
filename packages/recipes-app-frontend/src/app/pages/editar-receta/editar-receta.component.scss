@@ -1,17 +1,93 @@
 .editar-receta-container {
   margin: 20px;
+  display: flex;
+  justify-content: center;
 }
 
-mat-card {
-  max-width: 600px;
+/* 🔹 Ajuste del ancho responsivo */
+.editar-card {
+  width: 75%;
+  max-width: 700px;
   margin: 0 auto;
+  padding: 16px;
+  border: 2px solid #1976d2;
+  background-color: #e3f2fd;
 }
 
-mat-form-field {
+/* 🔹 Hacer que el form ocupe toda la pantalla en móviles */
+@media (max-width: 768px) {
+  .editar-card {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* 🔹 Sección visualmente destacada */
+.section-card {
+  margin-top: 20px;
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 🔹 Destacar descripción */
+.editar-descripcion {
+  border: 2px solid #1976d2;
+}
+
+/* 🔹 Destacar categoría */
+.categoria-container {
+  margin-top: 30px;
+  padding: 16px;
+  border: 2px solid #ffc107;
+  background-color: #fffde7;
+  border-radius: 8px;
+}
+
+.categoria-field {
   width: 100%;
-  margin-bottom: 16px;
 }
 
+/* 🔹 Ingredientes en filas separadas */
+.ingredient-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.input-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.full-width {
+  flex: 1;
+  width: 100%;
+}
+
+/* 🔹 Pasos */
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+/* 🔹 Botones */
 button {
   width: 100%;
+  margin-top: 10px;
+}
+
+.add-button {
+  color: #1976d2;
+}
+
+.save-button {
+  background-color: #1976d2;
+  color: white;
 }

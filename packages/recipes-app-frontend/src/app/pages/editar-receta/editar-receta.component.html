@@ -1,5 +1,5 @@
 <div class="editar-receta-container" *ngIf="receta.title">
-  <mat-card>
+  <mat-card class="editar-card">
     <mat-card-header>
       <mat-card-title>Editar Receta</mat-card-title>
     </mat-card-header>
@@ -15,50 +15,58 @@
         </mat-form-field>
 
         <!-- Descripción -->
-        <div formGroupName="description">
+        <div class="section-card editar-descripcion">
           <h3>Descripción</h3>
-  
-          <mat-form-field appearance="fill">
-            <mat-label>Descripción</mat-label>
-            <input matInput formControlName="description" required>
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Tiempo de cocción</mat-label>
-            <input matInput formControlName="time" type="number" required>
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Porciones</mat-label>
-            <input matInput formControlName="quantity" type="number" required>
-          </mat-form-field>
+          <div formGroupName="description">
+            <mat-form-field class="full-width" appearance="fill">
+              <mat-label>Descripción</mat-label>
+              <textarea matInput formControlName="description" rows="3" required></textarea>
+            </mat-form-field>
+            <div class="input-group">
+              <mat-form-field appearance="fill">
+                <mat-label>Tiempo de cocción</mat-label>
+                <input matInput formControlName="time" type="number" required>
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Porciones</mat-label>
+                <input matInput formControlName="quantity" type="number" required>
+              </mat-form-field>
+            </div>
+          </div>
         </div>
 
         <!-- Categoría -->
-        <mat-form-field appearance="fill">
-          <mat-label>Categoría</mat-label>
-          <mat-select formControlName="category" required>
-            <mat-option value="entrada">Entrada</mat-option>
-            <mat-option value="acompanamiento">Acompañamiento</mat-option>
-            <mat-option value="principal">Plato Principal</mat-option>
-            <mat-option value="postre">Postre</mat-option>
-          </mat-select>
-          <mat-error *ngIf="recetaForm.get('category')?.hasError('required')">
-            La categoría es obligatoria.
-          </mat-error>
-        </mat-form-field>
+        <div class="categoria-container">
+          <h3>Categoría</h3>
+          <mat-form-field appearance="fill" class="categoria-field">
+            <mat-label>Categoría</mat-label>
+            <mat-select formControlName="category" required>
+              <mat-option value="entrada">Entrada</mat-option>
+              <mat-option value="acompanamiento">Acompañamiento</mat-option>
+              <mat-option value="principal">Plato Principal</mat-option>
+              <mat-option value="postre">Postre</mat-option>
+            </mat-select>
+            <mat-error *ngIf="recetaForm.get('category')?.hasError('required')">
+              La categoría es obligatoria.
+            </mat-error>
+          </mat-form-field>
+        </div>
 
         <!-- Ingredientes -->
-        <div formArrayName="ingredients">
+        <div formArrayName="ingredients" class="section-card">
           <h3>Ingredientes</h3>
-          <div *ngFor="let ingredient of ingredients.controls; let i = index" [formGroupName]="i">
-            <mat-form-field appearance="fill">
-              <mat-label>Cantidad</mat-label>
-              <input matInput formControlName="quantity" type="number" required />
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-              <mat-label>Unidad</mat-label>
-              <input matInput formControlName="unit" required />
-            </mat-form-field>
-            <mat-form-field appearance="fill">
+          <div *ngFor="let ingredient of ingredients.controls; let i = index" [formGroupName]="i" class="ingredient-item">
+            <div class="input-group">
+              <mat-form-field appearance="fill">
+                <mat-label>Cantidad</mat-label>
+                <input matInput formControlName="quantity" type="number" required />
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Unidad</mat-label>
+                <input matInput formControlName="unit" required />
+              </mat-form-field>
+            </div>
+            <mat-form-field class="full-width" appearance="fill">
               <mat-label>Nombre</mat-label>
               <input matInput formControlName="name" required />
             </mat-form-field>
@@ -67,13 +75,13 @@
             </button>
           </div>
         </div>
-        <button mat-button (click)="addIngredient()">Agregar Ingrediente</button>
+        <button mat-button class="add-button" (click)="addIngredient()">Agregar Ingrediente</button>
 
         <!-- Pasos -->
-        <div formArrayName="steps">
+        <div formArrayName="steps" class="section-card">
           <h3>Pasos</h3>
-          <div *ngFor="let step of steps.controls; let i = index" [formGroupName]="i">
-            <mat-form-field appearance="fill">
+          <div *ngFor="let step of steps.controls; let i = index" [formGroupName]="i" class="step-item">
+            <mat-form-field class="full-width" appearance="fill">
               <mat-label>Descripción del paso</mat-label>
               <textarea matInput formControlName="description" required></textarea>
             </mat-form-field>
@@ -82,10 +90,10 @@
             </button>
           </div>
         </div>
-        <button mat-button (click)="addStep()">Agregar Paso</button>
+        <button mat-button class="add-button" (click)="addStep()">Agregar Paso</button>
 
         <!-- Botón de guardar -->
-        <button mat-raised-button color="primary" type="submit" [disabled]="!recetaForm.valid">
+        <button mat-raised-button class="save-button" color="primary" type="submit" [disabled]="!recetaForm.valid">
           Guardar Cambios
         </button>
       </form>
