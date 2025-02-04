@@ -31,6 +31,19 @@
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* 🔹 Destacar título */
+.titulo-container {
+  margin-top: 30px;
+  padding: 16px;
+  border: 2px solid #ffc107;
+  background-color: #fffde7;
+  border-radius: 8px;
+}
+
+.titulo-field {
+  width: 100%;
+}
+
 /* 🔹 Destacar descripción */
 .editar-descripcion {
   border: 2px solid #1976d2;

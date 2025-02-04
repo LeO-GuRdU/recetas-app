@@ -6,13 +6,16 @@
     <mat-card-content>
       <form [formGroup]="recetaForm" (ngSubmit)="onSubmit()">
         <!-- Título -->
-        <mat-form-field appearance="fill">
-          <mat-label>Título</mat-label>
-          <input matInput formControlName="title" required>
-          <mat-error *ngIf="recetaForm.get('title')?.hasError('required')">
-            El título es obligatorio.
-          </mat-error>
-        </mat-form-field>
+        <div class="titulo-container">
+          <h3>Título</h3>
+          <mat-form-field appearance="fill" class="titulo-field">
+            <mat-label>Título</mat-label>
+            <input matInput formControlName="title" required />
+            <mat-error *ngIf="recetaForm.get('title')?.hasError('required')">
+              El título es obligatorio.
+            </mat-error>
+          </mat-form-field>
+        </div>
 
         <!-- Descripción -->
         <div class="section-card editar-descripcion">
@@ -20,16 +23,26 @@
           <div formGroupName="description">
             <mat-form-field class="full-width" appearance="fill">
               <mat-label>Descripción</mat-label>
-              <textarea matInput formControlName="description" rows="3" required></textarea>
+              <textarea
+                matInput
+                formControlName="description"
+                rows="3"
+                required
+              ></textarea>
             </mat-form-field>
             <div class="input-group">
               <mat-form-field appearance="fill">
                 <mat-label>Tiempo de cocción</mat-label>
-                <input matInput formControlName="time" type="number" required>
+                <input matInput formControlName="time" type="number" required />
               </mat-form-field>
               <mat-form-field appearance="fill">
                 <mat-label>Porciones</mat-label>
-                <input matInput formControlName="quantity" type="number" required>
+                <input
+                  matInput
+                  formControlName="quantity"
+                  type="number"
+                  required
+                />
               </mat-form-field>
             </div>
           </div>
@@ -55,11 +68,20 @@
         <!-- Ingredientes -->
         <div formArrayName="ingredients" class="section-card">
           <h3>Ingredientes</h3>
-          <div *ngFor="let ingredient of ingredients.controls; let i = index" [formGroupName]="i" class="ingredient-item">
+          <div
+            *ngFor="let ingredient of ingredients.controls; let i = index"
+            [formGroupName]="i"
+            class="ingredient-item"
+          >
             <div class="input-group">
               <mat-form-field appearance="fill">
                 <mat-label>Cantidad</mat-label>
-                <input matInput formControlName="quantity" type="number" required />
+                <input
+                  matInput
+                  formControlName="quantity"
+                  type="number"
+                  required
+                />
               </mat-form-field>
               <mat-form-field appearance="fill">
                 <mat-label>Unidad</mat-label>
@@ -75,25 +97,43 @@
             </button>
           </div>
         </div>
-        <button mat-button class="add-button" (click)="addIngredient()">Agregar Ingrediente</button>
+        <button mat-button class="add-button" (click)="addIngredient()">
+          Agregar Ingrediente
+        </button>
 
         <!-- Pasos -->
         <div formArrayName="steps" class="section-card">
           <h3>Pasos</h3>
-          <div *ngFor="let step of steps.controls; let i = index" [formGroupName]="i" class="step-item">
+          <div
+            *ngFor="let step of steps.controls; let i = index"
+            [formGroupName]="i"
+            class="step-item"
+          >
             <mat-form-field class="full-width" appearance="fill">
               <mat-label>Descripción del paso</mat-label>
-              <textarea matInput formControlName="description" required></textarea>
+              <textarea
+                matInput
+                formControlName="description"
+                required
+              ></textarea>
             </mat-form-field>
             <button mat-icon-button color="warn" (click)="removeStep(i)">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
         </div>
-        <button mat-button class="add-button" (click)="addStep()">Agregar Paso</button>
+        <button mat-button class="add-button" (click)="addStep()">
+          Agregar Paso
+        </button>
 
         <!-- Botón de guardar -->
-        <button mat-raised-button class="save-button" color="primary" type="submit" [disabled]="!recetaForm.valid">
+        <button
+          mat-raised-button
+          class="save-button"
+          color="primary"
+          type="submit"
+          [disabled]="!recetaForm.valid"
+        >
           Guardar Cambios
         </button>
       </form>
