@@ -15,22 +15,21 @@
         </mat-form-field>
 
         <!-- Descripción -->
-        <div formArrayName="description">
+        <div formGroupName="description">
           <h3>Descripción</h3>
-          <div *ngFor="let ingredient of ingredients.controls; let i = index" [formGroupName]="i">
-            <mat-form-field appearance="fill">
-              <mat-label>Descripción</mat-label>
-              <input matInput formControlName="description" required >
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-              <mat-label>Tiempo de cocción</mat-label>
-              <input matInput formControlName="time" type="number" required />
-            </mat-form-field>
-            <mat-form-field appearance="fill">
-              <mat-label>Porciones</mat-label>
-              <input matInput formControlName="quantity" type="number" required />
-            </mat-form-field>
-          </div>
+  
+          <mat-form-field appearance="fill">
+            <mat-label>Descripción</mat-label>
+            <input matInput formControlName="description" required>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Tiempo de cocción</mat-label>
+            <input matInput formControlName="time" type="number" required>
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Porciones</mat-label>
+            <input matInput formControlName="quantity" type="number" required>
+          </mat-form-field>
         </div>
 
         <!-- Categoría -->

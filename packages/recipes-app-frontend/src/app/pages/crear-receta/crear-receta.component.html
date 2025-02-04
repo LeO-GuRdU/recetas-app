@@ -1,112 +1,162 @@
 <div class="crear-receta-container">
   <mat-card>
     <mat-card-header>
-      <mat-card-title>Crear Nueva Receta</mat-card-title>
+      <mat-card-title>
+        <mat-icon color="primary">menu_book</mat-icon> Crear Nueva Receta
+      </mat-card-title>
     </mat-card-header>
     <mat-card-content>
       <form [formGroup]="recetaForm" (ngSubmit)="onSubmit()">
-        <!-- Título -->
-        <mat-form-field appearance="fill">
-          <mat-label>Título</mat-label>
-          <input matInput formControlName="title" required />
-          <mat-error *ngIf="recetaForm.get('title')?.hasError('required')">
-            El título es obligatorio.
-          </mat-error>
-        </mat-form-field>
+        <!-- Sección: Información Básica -->
+        <mat-card class="section-card">
+          <mat-card-title>
+            <mat-icon color="accent">info</mat-icon> Información General
+          </mat-card-title>
 
-        <!-- Descripción -->
-        <div formGroupName="description">
-          <h3>Descripción</h3>
-  
-          <mat-form-field appearance="fill">
-            <mat-label>Descripción</mat-label>
-            <input matInput formControlName="description" required>
+          <mat-form-field appearance="outline">
+            <mat-label>Título</mat-label>
+            <input matInput formControlName="title" required />
+            <mat-error *ngIf="recetaForm.get('title')?.hasError('required')">
+              El título es obligatorio.
+            </mat-error>
           </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Tiempo de cocción</mat-label>
-            <input matInput formControlName="time" type="number" required>
-          </mat-form-field>
-          <mat-form-field appearance="fill">
-            <mat-label>Porciones</mat-label>
-            <input matInput formControlName="quantity" type="number" required>
-          </mat-form-field>
-        </div>
 
-
-        <!-- Categoría -->
-        <mat-form-field appearance="fill">
-          <mat-label>Categoría</mat-label>
-          <mat-select formControlName="category" required>
-            <mat-option value="entrada">Entrada</mat-option>
-            <mat-option value="acompanamiento">Acompañamiento</mat-option>
-            <mat-option value="principal">Plato Principal</mat-option>
-            <mat-option value="postre">Postre</mat-option>
-          </mat-select>
-          <mat-error *ngIf="recetaForm.get('category')?.hasError('required')">
-            La categoría es obligatoria.
-          </mat-error>
-        </mat-form-field>
-
-        <!-- Imagen -->
-        <mat-form-field appearance="fill">
-          <mat-label>Imagen de la Receta</mat-label>
-          <input
-            matInput
-            [value]="file?.name || ''"
-            placeholder="Seleccionar archivo"
-            readonly
-            (click)="fileInput.click()"
-          />
-          <input
-            #fileInput
-            type="file"
-            (change)="onFileSelected($event)"
-            hidden
-            accept="image/*"
-          />
-        </mat-form-field>
-        <p *ngIf="uploadedImageUrl">
-          Imagen subida:
-          <img [src]="uploadedImageUrl" alt="Imagen subida" style="max-width: 100px;" />
-        </p>
-
-        <!-- Ingredientes -->
-        <div formArrayName="ingredients">
-          <div *ngFor="let ingredient of ingredients.controls; let i = index">
-            <div [formGroupName]="i">
-              <mat-form-field appearance="fill">
-                <mat-label>Cantidad</mat-label>
-                <input matInput formControlName="quantity" type="number" />
-              </mat-form-field>
-              <mat-form-field appearance="fill">
-                <mat-label>Unidad</mat-label>
-                <input matInput formControlName="unit" />
-              </mat-form-field>
-              <mat-form-field appearance="fill">
-                <mat-label>Nombre</mat-label>
-                <input matInput formControlName="name" />
-              </mat-form-field>
+          <!-- Descripción -->
+          <div class="section-card">
+            <h3>Descripción</h3>
+            <div formGroupName="description">
+              <div class="input-group">
+                <mat-form-field class="full-width" appearance="fill">
+                  <mat-label>Descripción</mat-label>
+                  <input matInput formControlName="description" required />
+                </mat-form-field>
+              </div>
+              <div class="input-group">
+                <mat-form-field appearance="fill">
+                  <mat-label>Tiempo de cocción (min)</mat-label>
+                  <input
+                    matInput
+                    formControlName="time"
+                    type="number"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>Porciones</mat-label>
+                  <input
+                    matInput
+                    formControlName="quantity"
+                    type="number"
+                    required
+                  />
+                </mat-form-field>
+              </div>
             </div>
           </div>
-        </div>
-        <button mat-button (click)="addIngredient()">Agregar Ingrediente</button>
 
-        <!-- Pasos -->
-        <div formArrayName="steps">
-          <div *ngFor="let step of steps.controls; let i = index">
-            <div [formGroupName]="i">
-              <mat-form-field appearance="fill">
-                <mat-label>Descripción del paso</mat-label>
-                <textarea matInput formControlName="description"></textarea>
-              </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Categoría</mat-label>
+            <mat-select formControlName="category" required>
+              <mat-option value="entrada">Entrada</mat-option>
+              <mat-option value="acompanamiento">Acompañamiento</mat-option>
+              <mat-option value="principal">Plato Principal</mat-option>
+              <mat-option value="postre">Postre</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-card>
+
+        <!-- Sección: Imagen -->
+        <mat-card class="section-card">
+          <mat-card-title>
+            <mat-icon color="warn">image</mat-icon> Imagen de la Receta
+          </mat-card-title>
+          <div class="image-upload">
+            <button mat-button color="accent" (click)="fileInput.click()">
+              <mat-icon>add_a_photo</mat-icon> Seleccionar Imagen
+            </button>
+            <input
+              #fileInput
+              type="file"
+              (change)="onFileSelected($event)"
+              hidden
+              accept="image/*"
+            />
+            <p *ngIf="file?.name">{{ file?.name }}</p>
+            <div class="image-preview" *ngIf="uploadedImageUrl">
+              <img [src]="uploadedImageUrl" alt="Imagen subida" />
             </div>
           </div>
-        </div>
-        <button mat-button (click)="addStep()">Agregar Paso</button>
+        </mat-card>
 
-        <!-- Enviar -->
-        <button mat-raised-button color="primary" type="submit" [disabled]="!recetaForm.valid">
-          Guardar Receta
+        <!-- Sección: Ingredientes -->
+        <mat-card class="section-card">
+          <mat-card-title>
+            <mat-icon color="primary">kitchen</mat-icon> Ingredientes
+          </mat-card-title>
+          <div formArrayName="ingredients">
+            <div
+              *ngFor="let ingredient of ingredients.controls; let i = index"
+              class="ingredient-item"
+            >
+              <div [formGroupName]="i">
+                <mat-form-field appearance="outline">
+                  <mat-label>Cantidad</mat-label>
+                  <input matInput formControlName="quantity" type="number" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Unidad</mat-label>
+                  <input matInput formControlName="unit" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Nombre</mat-label>
+                  <input matInput formControlName="name" />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <button mat-button color="primary" (click)="addIngredient()">
+            <mat-icon>add</mat-icon> Agregar Ingrediente
+          </button>
+        </mat-card>
+
+        <!-- Sección: Pasos -->
+        <mat-card class="section-card">
+          <mat-card-title>
+            <mat-icon color="accent">list</mat-icon> Pasos de Preparación
+          </mat-card-title>
+          <div formArrayName="steps">
+            <div
+              *ngFor="let step of steps.controls; let i = index"
+              class="step-item"
+            >
+              <span class="step-number">{{ i + 1 }}</span>
+              <div [formGroupName]="i" class="full-width">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Paso {{ i + 1 }}</mat-label>
+                  <textarea
+                    matInput
+                    formControlName="description"
+                    rows="2"
+                  ></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+          <button mat-button color="primary" (click)="addStep()">
+            <mat-icon>add</mat-icon> Agregar Paso
+          </button>
+        </mat-card>
+
+        <!-- Botón de Envío -->
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          [disabled]="!recetaForm.valid"
+        >
+          <mat-icon>check</mat-icon> Guardar Receta
         </button>
       </form>
     </mat-card-content>

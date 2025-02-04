@@ -89,7 +89,11 @@ export class EditarRecetaComponent implements OnInit {
     console.log('Receta Traida: ', this.receta);
     this.recetaForm = this.fb.group({
       title: [this.receta?.title || '', Validators.required],
-      description: [this.receta?.description || '', Validators.required],
+      description: this.fb.group({
+        description: [this.receta?.description.description, Validators.required],
+        time: [this.receta?.description.time, Validators.required],
+        quantity: [this.receta?.description.quantity, Validators.required],
+      }),
       category: [this.receta?.category || '', Validators.required],
       ingredients: this.fb.array(
         this.receta?.ingredients.map((ingredient: any) =>

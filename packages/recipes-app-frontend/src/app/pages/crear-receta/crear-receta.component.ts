@@ -26,9 +26,9 @@ export class CrearRecetaComponent implements OnInit {
     this.recetaForm = this.fb.group({
       title: ['', Validators.required],
       description: this.fb.group({
-        description: ['', Validators.required],
-        time: [0, Validators.required],
-        quantity: [0, Validators.required],
+        description: ['', Validators.required], // Cambiado de "description" a "desc"
+        time: [null, [Validators.required, Validators.min(1)]],
+        quantity: [null, [Validators.required, Validators.min(1)]],
       }),
       category: ['', Validators.required],
       image: [''],
